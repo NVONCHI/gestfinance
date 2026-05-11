@@ -11,6 +11,9 @@ use App\Middleware\AuthMiddleware;
 use App\Middleware\CsrfMiddleware;
 use App\Enums\StatutDemande;
 
+/**
+ * Contrôleur pour la gestion des demandes par les utilisateurs.
+ */
 class DemandeController extends Controller
 {
     private Demande $demandeModel;
@@ -21,11 +24,12 @@ class DemandeController extends Controller
         $this->demandeModel = new Demande();
     }
 
+    /**
+     * Liste les demandes de l'utilisateur connecté.
+     */
     public function index(): void
     {
-        $stmt = \App\Core\Database::getInstance()->prepare("SELECT * FROM demandes WHERE user_id = ? ORDER BY created_at DESC");
-        $stmt->execute([$_SESSION['user_id']]);
-        $demandes = $stmt->fetchAll();
+        $demandes = $this->demandeModel->findByUser($_SESSION['user_id']);
         
         $this->render('user/demandes/index', [
             'demandes' => $demandes,
@@ -37,11 +41,13 @@ class DemandeController extends Controller
         ]);
     }
 
+    /**
+     * Formulaire de création d'une demande.
+     */
     public function create(): void
     {
-        $services = (new Service())->all();
         $this->render('user/demandes/create', [
-            'services' => $services,
+            'services' => (new Service())->all(),
             'title' => 'Nouvelle Demande',
             'breadcrumbs' => [
                 ['label' => 'Accueil', 'url' => '/'],
@@ -51,21 +57,54 @@ class DemandeController extends Controller
         ]);
     }
 
+    /**
+     * Enregistre une nouvelle demande.
+     */
+    public function store(): void
+    {
+        CsrfMiddleware::handle();
+
+        $data = [
+            'user_id' => $_SESSION['user_id'],
+            'service_id' => $_POST['service_id'],
+            'fonction' => $_POST['fonction'],
+            'objet' => $_POST['objet'],
+            'montant' => $_POST['montant'],
+            'statut' => isset($_POST['submit_action']) && $_POST['submit_action'] === 'soumettre' 
+                        ? StatutDemande::SOUMIS->value 
+                        : StatutDemande::BROUILLON->value,
+        ];
+
+        if ($this->demandeModel->create($data)) {
+            $_SESSION['flash_success'] = "La demande a été enregistrée avec succès.";
+            $this->redirect('/demandes');
+        } else {
+            $_SESSION['flash_error'] = "Une erreur est survenue lors de l'enregistrement.";
+            $this->redirect('/demandes/create');
+        }
+    }
+
+    /**
+     * Affiche les détails d'une demande.
+     */
     public function show(int $id): void
     {
-        $db = \App\Core\Database::getInstance();
-        $stmt = $db->prepare("SELECT d.*, u.nom, u.prenom, s.libelle as service_nom 
-                             FROM demandes d 
-                             JOIN users u ON d.user_id = u.id 
-                             JOIN services s ON d.service_id = s.id 
-                             WHERE d.id = ?");
-        $stmt->execute([$id]);
-        $demande = $stmt->fetch();
+        $demande = $this->demandeModel->findWithDetails($id);
 
         if (!$demande) {
-            die("Demande non trouvée.");
+            $_SESSION['flash_error'] = "Demande introuvable.";
+            $this->redirect('/demandes');
         }
 
+        // Vérifier l'accès (le demandeur ou un valideur concerné)
+        // Pour simplifier : le demandeur
+        if ($demande['user_id'] != $_SESSION['user_id'] && $_SESSION['user_category'] === 'agent') {
+            http_response_code(403);
+            die("Accès non autorisé.");
+        }
+
+        // Récupérer l'historique des validations
+        $db = \App\Core\Database::getInstance();
         $stmt = $db->prepare("SELECT v.*, u.nom, u.prenom 
                              FROM validations v 
                              JOIN users u ON v.validateur_id = u.id 
@@ -81,34 +120,8 @@ class DemandeController extends Controller
             'breadcrumbs' => [
                 ['label' => 'Accueil', 'url' => '/'],
                 ['label' => 'Mes Demandes', 'url' => '/demandes'],
-                ['label' => "Demande #$id", 'url' => "/demandes/$id"]
+                ['label' => "Demande #" . $id, 'url' => '#']
             ]
         ]);
-    }
-
-    public function store(): void
-    {
-        // ... (identique à l'original) ...
-        CsrfMiddleware::handle();
-        $data = [
-            'user_id' => $_SESSION['user_id'],
-            'service_id' => $_POST['service_id'],
-            'fonction' => $_POST['fonction'],
-            'objet' => $_POST['objet'],
-            'montant' => $_POST['montant'],
-            'statut' => isset($_POST['submit_action']) && $_POST['submit_action'] === 'soumettre' 
-                        ? StatutDemande::SOUMIS->value 
-                        : StatutDemande::BROUILLON->value,
-        ];
-        $columns = implode(', ', array_keys($data));
-        $placeholders = implode(', ', array_fill(0, count($data), '?'));
-        $stmt = \App\Core\Database::getInstance()->prepare("INSERT INTO demandes ({$columns}) VALUES ({$placeholders})");
-        if ($stmt->execute(array_values($data))) {
-            $_SESSION['flash_success'] = "Demande enregistrée.";
-            $this->redirect('/demandes');
-        } else {
-            $_SESSION['flash_error'] = "Erreur.";
-            $this->redirect('/demandes/create');
-        }
     }
 }

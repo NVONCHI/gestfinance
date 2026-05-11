@@ -1,43 +1,74 @@
-<?php $title = "Tableau de Bord"; ?>
+<div class="flex-between" style="margin-bottom: 32px; flex-wrap: wrap; gap: 16px;">
+    <h1 style="margin: 0; font-size: 28px; color: var(--md-sys-color-primary);">Bonjour, <?= explode(' ', $_SESSION['user_name'])[0] ?> !</h1>
+    <a href="/demandes/create" class="btn btn-filled">
+        <span class="material-symbols-outlined">add</span>
+        Nouvelle Demande
+    </a>
+</div>
 
-<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px;">
-    <?php if (in_array($_SESSION['user_category'], ['dg', 'responsable_administratif'])): ?>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+    <!-- Section Mes Demandes -->
     <div class="card">
-        <h2 style="font-size: 20px; color: var(--md-sys-color-primary); margin-top: 0; margin-bottom: 24px;">Administration</h2>
-        <nav style="display: flex; flex-direction: column; gap: 12px;">
-            <a href="/admin/users" class="btn btn-outlined" style="justify-content: flex-start; width: 100%;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+            <span class="material-symbols-outlined" style="color: var(--md-sys-color-primary); font-size: 32px;">history</span>
+            <h2 style="margin: 0; font-size: 20px;">Mes activités</h2>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            <a href="/demandes" class="btn btn-outlined" style="justify-content: flex-start; width: 100%;">
+                <span class="material-symbols-outlined">list_alt</span>
+                Suivre mes demandes
+            </a>
+            <p style="font-size: 14px; color: var(--md-sys-color-on-surface-variant); padding: 0 12px;">
+                Consultez l'état d'avancement de vos demandes de besoin financier en temps réel.
+            </p>
+        </div>
+    </div>
+
+    <!-- Section Validations (Visible selon rôle) -->
+    <?php if ($_SESSION['user_category'] !== 'agent'): ?>
+    <div class="card" style="border-left: 4px solid var(--md-sys-color-secondary);">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+            <span class="material-symbols-outlined" style="color: var(--md-sys-color-secondary); font-size: 32px;">fact_check</span>
+            <h2 style="margin: 0; font-size: 20px;">Centre de décision</h2>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            <a href="/validations" class="btn btn-filled" style="justify-content: flex-start; width: 100%; background-color: var(--md-sys-color-secondary);">
+                <span class="material-symbols-outlined">rule</span>
+                Demandes en attente
+            </a>
+            <p style="font-size: 14px; color: var(--md-sys-color-on-surface-variant); padding: 0 12px;">
+                Vous avez des demandes qui nécessitent votre approbation.
+            </p>
+        </div>
+    </div>
+    <?php endif; ?>
+
+    <!-- Section Administration (Visible selon rôle) -->
+    <?php if (in_array($_SESSION['user_category'], ['dg', 'responsable_administratif'])): ?>
+    <div class="card" style="border-left: 4px solid var(--md-sys-color-outline);">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+            <span class="material-symbols-outlined" style="color: var(--md-sys-color-outline); font-size: 32px;">settings</span>
+            <h2 style="margin: 0; font-size: 20px;">Pilotage</h2>
+        </div>
+        <nav style="display: flex; flex-direction: column; gap: 8px;">
+            <a href="/admin/users" class="btn btn-text" style="justify-content: flex-start;">
                 <span class="material-symbols-outlined">group</span> Gestion des Utilisateurs
             </a>
-            <a href="/admin/services" class="btn btn-outlined" style="justify-content: flex-start; width: 100%;">
-                <span class="material-symbols-outlined">lan</span> Gestion des Services
-            </a>
-            <a href="/admin/roles" class="btn btn-outlined" style="justify-content: flex-start; width: 100%;">
-                <span class="material-symbols-outlined">badge</span> Gestion des Rôles
+            <a href="/admin/services" class="btn btn-text" style="justify-content: flex-start;">
+                <span class="material-symbols-outlined">lan</span> Configuration des Services
             </a>
         </nav>
     </div>
     <?php endif; ?>
+</div>
 
-    <div class="card">
-        <h2 style="font-size: 20px; color: var(--md-sys-color-primary); margin-top: 0; margin-bottom: 24px;">Mes Demandes</h2>
-        <nav style="display: flex; flex-direction: column; gap: 12px;">
-            <a href="/demandes/create" class="btn btn-filled" style="justify-content: flex-start; width: 100%;">
-                <span class="material-symbols-outlined">add</span> Nouvelle Demande
-            </a>
-            <a href="/demandes" class="btn btn-outlined" style="justify-content: flex-start; width: 100%;">
-                <span class="material-symbols-outlined">list</span> Suivre mes demandes
-            </a>
-        </nav>
+<!-- Rappel de statut rapide (Optionnel) -->
+<div class="card" style="margin-top: 24px; background: var(--md-sys-color-primary-container); border: none;">
+    <div style="display: flex; align-items: center; gap: 16px; color: var(--md-sys-color-on-primary-container);">
+        <span class="material-symbols-outlined" style="font-size: 40px;">info</span>
+        <div>
+            <div style="font-weight: 700; font-size: 16px;">Système de validation multi-niveaux</div>
+            <div style="font-size: 14px; opacity: 0.8;">Toute demande suit le circuit : Directeur de Service → Direction Générale → Responsable Administratif.</div>
+        </div>
     </div>
-
-    <?php if ($_SESSION['user_category'] !== 'agent'): ?>
-    <div class="card">
-        <h2 style="font-size: 20px; color: var(--md-sys-color-primary); margin-top: 0; margin-bottom: 24px;">Validations</h2>
-        <nav style="display: flex; flex-direction: column; gap: 12px;">
-            <a href="/validations" class="btn btn-filled" style="justify-content: flex-start; width: 100%; background-color: var(--md-sys-color-secondary);">
-                <span class="material-symbols-outlined">rule</span> Demandes à valider
-            </a>
-        </nav>
-    </div>
-    <?php endif; ?>
 </div>

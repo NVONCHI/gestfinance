@@ -1,22 +1,27 @@
 # Project Plan: GestFinance
 
 ## Phase 1: Foundations
-- [ ] Issue #1: Project structure, Composer setup, and .env
-- [ ] Issue #2: Database schema (SQL migrations) and Enums
-- [ ] Issue #3: Core Infrastructure (DB Singleton, PSR-7 Request/Response, Router)
+- [x] Issue #1: Project structure, Composer setup, and .env
+- [x] Issue #2: Database schema (SQL migrations) and Enums
+- [x] Issue #3: Core Infrastructure (DB Singleton, PSR-7 Request/Response, Router)
 
 ## Phase 2: Security & Auth
-- [ ] Issue #4: Middlewares (CSRF, Auth, Role, RateLimit)
-- [ ] Issue #5: Authentication system (Login/Logout)
+- [x] Issue #4: Middlewares (CSRF, Auth, Role, RateLimit)
+- [x] Issue #5: Authentication system (Login/Logout)
 
 ## Phase 3: Admin Features
-- [ ] Issue #6: Admin - User CRUD (Material Design 3 Styles)
-- [ ] Issue #7: Admin - Service & Role CRUD
+- [x] Issue #6: Admin - User CRUD (Material Design 3 Styles)
+- [x] Issue #7: Admin - Service & Role CRUD
 
 ## Phase 4: User Workflow
-- [ ] Issue #8: Demande creation (Agent role)
-- [ ] Issue #9: Validation Dashboard (Director, DG roles)
-- [ ] Issue #10: Final Validation & Registration (RA role)
+- [x] Issue #8: Demande creation (Agent role)
+- [x] Issue #9: Validation Dashboard (Director, DG roles)
+- [x] Issue #10: Final Validation & Registration (RA role)
+
+## Phase 8: User Workflow Validation
+- [x] Issue #18: Verify Login for all roles (Agent, Director, DG, RA)
+- [x] Issue #19: Validate Demand Life Cycle (Draft -> Submitted -> Validated -> Registered)
+- [x] Issue #20: Ensure clear feedback for rejected demands
 
 ## Phase 5: PDF & Reporting
 - [ ] Issue #11: PDF Generation Service (DOMPDF)
