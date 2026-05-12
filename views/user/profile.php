@@ -12,29 +12,29 @@
 
         <div class="flex gap-16">
             <div class="form-group" style="flex: 1;">
-                <label for="nom">Nom</label>
+                <label for="nom"><?= __('name') ?></label>
                 <input disabled readonly type="text" id="nom" name="nom" class="form-control" value="<?= htmlspecialchars($user['nom']) ?>" required>
             </div>
             <div class="form-group" style="flex: 1;">
-                <label for="prenom">Prénom</label>
+                <label for="prenom"><?= __('firstname') ?></label>
                 <input disabled readonly type="text" id="prenom" name="prenom" class="form-control" value="<?= htmlspecialchars($user['prenom']) ?>" required>
             </div>
         </div>
 
         <div class="form-group">
-            <label for="email">Adresse Email</label>
+            <label for="email"><?= __('email_address') ?></label>
             <input disabled readonly type="email" id="email" name="email" class="form-control" value="<?= htmlspecialchars($user['email']) ?>" required>
         </div>
 
         <div class="form-group">
-            <label for="password">Nouveau mot de passe (laisser vide pour ne pas changer)</label>
+            <label for="password"><?= __('new_password_desc') ?></label>
             <input type="password" id="password" name="password" class="form-control" placeholder="••••••••">
         </div>
 
         <div class="flex gap-16 mt-24" style="border-top: 1px solid var(--md-sys-color-surface-variant); padding-top: 24px;">
             <button type="submit" class="btn btn-filled">
                 <span class="material-symbols-outlined">save</span>
-                Mettre à jour mon profil
+                <?= __('profile_update_btn') ?>
             </button>
         </div>
     </form>

@@ -15,6 +15,17 @@ use App\Controllers\User\FicheController;
 // Landing & Portal
 $router->get('/', [AuthController::class, 'landing']);
 
+// Switch Language
+$router->get('/lang/{locale}', function($locale) {
+    if (in_array($locale, ['fr', 'en'])) {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        $_SESSION['lang'] = $locale;
+    }
+    $referer = $_SERVER['HTTP_REFERER'] ?? '/dashboard';
+    header("Location: $referer");
+    exit;
+});
+
 // Auth System
 $router->get('/login/admin', [AuthController::class, 'showAdminLogin']);
 $router->get('/login/user', [AuthController::class, 'showUserLogin']);

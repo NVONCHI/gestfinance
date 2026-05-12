@@ -24,6 +24,16 @@ try {
         session_start();
     }
 
+    // Chargement de la langue
+    $lang = $_SESSION['lang'] ?? 'fr';
+    \App\Core\Translator::load($lang);
+
+    if (!function_exists('__')) {
+        function __(string $key, array $params = []): string {
+            return \App\Core\Translator::get($key, $params);
+        }
+    }
+
     // Chargement des routes
     $router = new Router();
     require_once __DIR__ . '/../routes/web.php';

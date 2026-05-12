@@ -1,4 +1,4 @@
-<?php $title = "Bienvenue sur GestFinance"; ?>
+<?php $title = __('welcome_title'); ?>
 
 <style>
     .hero-section {
@@ -52,11 +52,11 @@
 
 <div class="hero-section">
     <div style="background: var(--md-sys-color-primary); color: white; padding: 12px 24px; border-radius: 100px; font-size: 14px; font-weight: 700; margin-bottom: 24px; text-transform: uppercase; letter-spacing: 1px;">
-        Plateforme de Gestion Financière
+        <?= __('platform_title') ?>
     </div>
-    <h1 style="font-size: 48px; margin: 0; font-weight: 700; line-height: 1.2;">Simplifiez vos demandes de <br><span style="color: var(--md-sys-color-primary);">besoins financiers</span></h1>
+    <h1 style="font-size: 48px; margin: 0; font-weight: 700; line-height: 1.2;"><?= __('simplify_requests') ?> <br><span style="color: var(--md-sys-color-primary);"><?= __('financial_needs') ?></span></h1>
     <p style="font-size: 18px; color: var(--md-sys-color-on-surface-variant); max-width: 600px; margin-top: 24px;">
-        Une solution moderne pour centraliser, valider et suivre les flux financiers de votre organisation en toute sécurité.
+        <?= __('landing_desc') ?>
     </p>
 
     <div class="landing-grid">
@@ -64,18 +64,18 @@
             <div class="icon-container icon-admin">
                 <span class="material-symbols-outlined" style="font-size: 40px;">admin_panel_settings</span>
             </div>
-            <h2 style="margin: 0; font-size: 24px;">Espace Administrateur</h2>
-            <p style="margin: 0; font-size: 14px; color: var(--md-sys-color-on-surface-variant);">Gestion des utilisateurs, configuration des services et pilotage global du système.</p>
-            <div class="btn btn-filled" style="margin-top: 8px;">Accéder à l'admin</div>
+            <h2 style="margin: 0; font-size: 24px;"><?= __('admin_space') ?></h2>
+            <p style="margin: 0; font-size: 14px; color: var(--md-sys-color-on-surface-variant);"><?= __('admin_space_desc') ?></p>
+            <div class="btn btn-filled" style="margin-top: 8px;"><?= __('access_admin') ?></div>
         </a>
 
         <a href="/login/user" class="space-card">
             <div class="icon-container icon-user">
                 <span class="material-symbols-outlined" style="font-size: 40px;">person</span>
             </div>
-            <h2 style="margin: 0; font-size: 24px;">Espace Utilisateur</h2>
-            <p style="margin: 0; font-size: 14px; color: var(--md-sys-color-on-surface-variant);">Soumission de demandes, suivi en temps réel et tableau de bord personnel.</p>
-            <div class="btn btn-outlined" style="margin-top: 8px;">Accéder à mon espace</div>
+            <h2 style="margin: 0; font-size: 24px;"><?= __('user_space') ?></h2>
+            <p style="margin: 0; font-size: 14px; color: var(--md-sys-color-on-surface-variant);"><?= __('user_space_desc') ?></p>
+            <div class="btn btn-outlined" style="margin-top: 8px;"><?= __('access_user_space') ?></div>
         </a>
     </div>
 </div>

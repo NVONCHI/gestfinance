@@ -1,8 +1,8 @@
 <div class="flex-between" style="margin-bottom: 24px;">
-    <p style="color: var(--md-sys-color-on-surface-variant); margin: 0;">Visualisation de l'organigramme des rôles métiers</p>
+    <p style="color: var(--md-sys-color-on-surface-variant); margin: 0;"><?= __('roles_chart_desc') ?></p>
     <a href="/admin/roles/create" class="btn btn-filled">
         <span class="material-symbols-outlined">add</span>
-        Nouveau Rôle
+        <?= __('new_role') ?>
     </a>
 </div>
 
@@ -139,8 +139,8 @@
                 echo '<code>' . htmlspecialchars($role['code']) . '</code>';
                 
                 echo '<div class="node-actions">';
-                echo '<a href="/admin/roles/edit/' . $role['id'] . '" style="color: inherit;"><span class="material-symbols-outlined" style="font-size: 16px;">edit</span></a>';
-                echo '<a href="/admin/roles/delete/' . $role['id'] . '" style="color: #C62828;" onclick="return confirm(\'Supprimer ce rôle ?\')"><span class="material-symbols-outlined" style="font-size: 16px;">delete</span></a>';
+                echo '<a href="/admin/roles/edit/' . $role['id'] . '" style="color: inherit;" title="' . __('edit') . '"><span class="material-symbols-outlined" style="font-size: 16px;">edit</span></a>';
+                echo '<a href="/admin/roles/delete/' . $role['id'] . '" style="color: #C62828;" title="' . __('delete') . '" onclick="return confirm(\'' . __('confirm_delete_role') . '\')"><span class="material-symbols-outlined" style="font-size: 16px;">delete</span></a>';
                 echo '</div>';
                 
                 echo '</div>';
@@ -155,7 +155,7 @@
         }
 
         if (empty($tree)) {
-            echo '<div style="text-align: center; padding: 32px; color: var(--md-sys-color-outline);">Aucun rôle défini.</div>';
+            echo '<div style="text-align: center; padding: 32px; color: var(--md-sys-color-outline);">' . __('no_role_defined') . '</div>';
         } else {
             renderTreeVisual($tree, true);
         }

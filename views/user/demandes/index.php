@@ -1,4 +1,4 @@
-<?php $title = "Mes Demandes"; ?>
+<?php $title = __('my_requests'); ?>
 
 <div class="flex-between" style="margin-bottom: 32px;">
     <div style="display: flex; align-items: center; gap: 16px;">
@@ -6,13 +6,13 @@
             <span class="material-symbols-outlined" style="font-size: 32px;">account_balance_wallet</span>
         </div>
         <div>
-            <h1 style="margin: 0; font-size: 24px;">Historique des demandes</h1>
-            <p style="margin: 0; font-size: 14px; color: var(--md-sys-color-outline);">Gérez et suivez vos expressions de besoins financiers</p>
+            <h1 style="margin: 0; font-size: 24px;"><?= __('my_requests_title') ?></h1>
+            <p style="margin: 0; font-size: 14px; color: var(--md-sys-color-outline);"><?= __('manage_requests') ?></p>
         </div>
     </div>
     <a href="/demandes/create" class="btn btn-filled">
         <span class="material-symbols-outlined">add</span>
-        Nouvelle Demande
+        <?= __('new_request') ?>
     </a>
 </div>
 
@@ -20,11 +20,11 @@
     <table class="data-table">
         <thead style="background: #F1F4F9;">
             <tr>
-                <th style="padding-left: 24px;">DATE</th>
-                <th>OBJET DE LA DEMANDE</th>
-                <th>MONTANT ESTIMÉ</th>
-                <th>STATUT ACTUEL</th>
-                <th style="text-align: right; padding-right: 24px;">ACTIONS</th>
+                <th style="padding-left: 24px;"><?= __('date') ?></th>
+                <th><?= __('request_object') ?></th>
+                <th><?= __('estimated_amount') ?></th>
+                <th><?= __('current_status') ?></th>
+                <th style="text-align: right; padding-right: 24px;"><?= __('actions') ?></th>
             </tr>
         </thead>
         <tbody>
@@ -32,9 +32,9 @@
                 <tr>
                     <td colspan="5" style="text-align: center; padding: 64px; color: var(--md-sys-color-outline);">
                         <span class="material-symbols-outlined" style="font-size: 64px; display: block; margin-bottom: 16px; opacity: 0.2;">folder_off</span>
-                        <div style="font-size: 18px; font-weight: 500;">Aucune demande enregistrée</div>
-                        <p style="margin-top: 8px;">Commencez par créer votre première demande de besoin financier.</p>
-                        <a href="/demandes/create" class="btn btn-outlined" style="margin-top: 24px;">Créer une demande</a>
+                        <div style="font-size: 18px; font-weight: 500;"><?= __('no_request') ?></div>
+                        <p style="margin-top: 8px;"><?= __('start_request') ?></p>
+                        <a href="/demandes/create" class="btn btn-outlined" style="margin-top: 24px;"><?= __('create_request') ?></a>
                     </td>
                 </tr>
             <?php endif; ?>
@@ -65,11 +65,11 @@
                 </td>
                 <td style="text-align: right; padding-right: 24px;">
                     <div class="flex" style="justify-content: flex-end; gap: 8px;">
-                        <a href="/demandes/<?= $demande['id'] ?>" class="btn btn-text" style="padding: 8px; min-width: 40px;" title="Détails">
+                        <a href="/demandes/<?= $demande['id'] ?>" class="btn btn-text" style="padding: 8px; min-width: 40px;" title="<?= __('details') ?>">
                             <span class="material-symbols-outlined">visibility</span>
                         </a>
                         <?php if ($demande['statut'] === 'enregistre'): ?>
-                            <a href="/demandes/<?= $demande['id'] ?>/pdf" target="_blank" class="btn btn-text" style="padding: 8px; min-width: 40px; color: var(--md-sys-color-error);" title="Télécharger PDF">
+                            <a href="/demandes/<?= $demande['id'] ?>/pdf" target="_blank" class="btn btn-text" style="padding: 8px; min-width: 40px; color: var(--md-sys-color-error);" title="<?= __('download_pdf') ?>">
                                 <span class="material-symbols-outlined">picture_as_pdf</span>
                             </a>
                         <?php endif; ?>

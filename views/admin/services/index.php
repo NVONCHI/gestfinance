@@ -2,7 +2,7 @@
     <div></div>
     <a href="/admin/services/create" class="btn btn-filled">
         <span class="material-symbols-outlined">add</span>
-        Nouveau Service
+        <?= __('new_service') ?>
     </a>
 </div>
 
@@ -10,11 +10,11 @@
     <table class="data-table">
         <thead>
             <tr>
-                <th>Libellé</th>
-                <th>Responsable</th>
-                <th>Code</th>
-                <th>Statut</th>
-                <th style="text-align: right;">Actions</th>
+                <th><?= __('service_label') ?></th>
+                <th><?= __('manager') ?></th>
+                <th><?= __('code') ?></th>
+                <th><?= __('status') ?></th>
+                <th style="text-align: right;"><?= __('actions') ?></th>
             </tr>
         </thead>
         <tbody>
@@ -28,22 +28,22 @@
                             <span style="font-size: 14px;"><?= htmlspecialchars($service['resp_prenom'] . ' ' . $service['resp_nom']) ?></span>
                         </div>
                     <?php else: ?>
-                        <span style="color: var(--md-sys-color-outline); font-style: italic; font-size: 13px;">Non assigné</span>
+                        <span style="color: var(--md-sys-color-outline); font-style: italic; font-size: 13px;"><?= __('unassigned') ?></span>
                     <?php endif; ?>
                 </td>
                 <td><code style="background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 12px;"><?= htmlspecialchars($service['code']) ?></code></td>
                 <td>
                     <?php if ($service['is_active']): ?>
-                        <span style="color: #2E7D32; background: #E8F5E9; padding: 4px 12px; border-radius: 100px; font-size: 12px; font-weight: 700;">Actif</span>
+                        <span style="color: #2E7D32; background: #E8F5E9; padding: 4px 12px; border-radius: 100px; font-size: 12px; font-weight: 700;"><?= __('active') ?></span>
                     <?php else: ?>
-                        <span style="color: #C62828; background: #FFEBEE; padding: 4px 12px; border-radius: 100px; font-size: 12px; font-weight: 700;">Inactif</span>
+                        <span style="color: #C62828; background: #FFEBEE; padding: 4px 12px; border-radius: 100px; font-size: 12px; font-weight: 700;"><?= __('inactive') ?></span>
                     <?php endif; ?>
                 </td>
                 <td style="text-align: right;">
-                    <a href="/admin/services/edit/<?= $service['id'] ?>" class="btn btn-text" title="Modifier">
+                    <a href="/admin/services/edit/<?= $service['id'] ?>" class="btn btn-text" title="<?= __('edit') ?>">
                         <span class="material-symbols-outlined">edit</span>
                     </a>
-                    <a href="/admin/services/delete/<?= $service['id'] ?>" class="btn btn-text btn-danger" title="Supprimer" onclick="return confirm('Supprimer ce service ?')">
+                    <a href="/admin/services/delete/<?= $service['id'] ?>" class="btn btn-text btn-danger" title="<?= __('delete') ?>" onclick="return confirm('<?= __('confirm_delete_service') ?>')">
                         <span class="material-symbols-outlined">delete</span>
                     </a>
                 </td>
