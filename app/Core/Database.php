@@ -26,7 +26,7 @@ class Database
             try {
                 // Charger .env si non défini
                 if (!isset($_ENV['DB_HOST'])) {
-                    $dotenvPath = realpath(__DIR__ . '/../../');
+                    $dotenvPath = dirname(__DIR__, 2) . '/';
                     if (file_exists($dotenvPath . '/.env')) {
                         $dotenv = Dotenv::createImmutable($dotenvPath);
                         $dotenv->load();
@@ -48,7 +48,7 @@ class Database
                 ]);
             } catch (PDOException $e) {
                 // Au lieu de die(), on affiche une erreur plus propre pour le debug
-                throw new \Exception("Erreur de connexion à la base de données : " . $e->getMessage());
+                throw new \RuntimeException("Erreur de connexion à la base de données : " . $e->getMessage());
             }
         }
 

@@ -11,8 +11,8 @@
         <thead>
             <tr>
                 <th>Libellé</th>
+                <th>Responsable</th>
                 <th>Code</th>
-                <th>Description</th>
                 <th>Statut</th>
                 <th style="text-align: right;">Actions</th>
             </tr>
@@ -21,8 +21,17 @@
             <?php foreach ($services as $service): ?>
             <tr>
                 <td style="font-weight: 500;"><?= htmlspecialchars($service['libelle']) ?></td>
+                <td>
+                    <?php if ($service['resp_nom']): ?>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="material-symbols-outlined" style="font-size: 18px; color: var(--md-sys-color-primary);">account_circle</span>
+                            <span style="font-size: 14px;"><?= htmlspecialchars($service['resp_prenom'] . ' ' . $service['resp_nom']) ?></span>
+                        </div>
+                    <?php else: ?>
+                        <span style="color: var(--md-sys-color-outline); font-style: italic; font-size: 13px;">Non assigné</span>
+                    <?php endif; ?>
+                </td>
                 <td><code style="background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 12px;"><?= htmlspecialchars($service['code']) ?></code></td>
-                <td style="color: var(--md-sys-color-on-surface-variant); font-size: 14px;"><?= htmlspecialchars(substr($service['description'] ?? '', 0, 60)) ?>...</td>
                 <td>
                     <?php if ($service['is_active']): ?>
                         <span style="color: #2E7D32; background: #E8F5E9; padding: 4px 12px; border-radius: 100px; font-size: 12px; font-weight: 700;">Actif</span>

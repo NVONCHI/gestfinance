@@ -6,60 +6,58 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 use App\Core\Database;
 use App\Enums\CategorieUtilisateur;
-use Dotenv\Dotenv;
+use App\Enums\ServiceTypeEnum;
 
-// Chargement de l'environnement
-if (file_exists(__DIR__ . '/.env')) {
-    $dotenv = Dotenv::createImmutable(__DIR__);
-    $dotenv->load();
-}
 
 echo "--- Démarrage du seeding ---\n";
 
 try {
     $db = Database::getInstance();
 
-    // 1. Insertion des Services
+    // 1. Insertion des Services via l'Enum ServiceType
     echo "Insertion des services...\n";
-    $services = [
-        ['Informatique', 'INF', 'Direction des Systèmes d\'Information'],
-        ['Ressources Humaines', 'RH', 'Gestion du personnel'],
-        ['Comptabilité', 'COMPTA', 'Gestion financière et comptable'],
-        ['Direction Générale', 'DG', 'Administration générale'],
-    ];
-
-    $stmt = $db->prepare("INSERT IGNORE INTO services (libelle, code, description) VALUES (?, ?, ?)");
-    foreach ($services as $s) {
-        $stmt->execute($s);
+    $stmtService = $db->prepare("INSERT IGNORE INTO services (libelle, code, description) VALUES (?, ?, ?)");
+    
+    foreach (ServiceTypeEnum::cases() as $service) {
+        $stmtService->execute([
+            $service->label(),
+            $service->value,
+            $service->description()
+        ]);
     }
-    $infServiceId = $db->query("SELECT id FROM services WHERE code = 'INF'")->fetchColumn();
-    $dgServiceId = $db->query("SELECT id FROM services WHERE code = 'DG'")->fetchColumn();
+    
+    $infServiceId = $db->query("SELECT id FROM services WHERE code = '" . ServiceTypeEnum::INF->value . "'")->fetchColumn();
+    $dgServiceId = $db->query("SELECT id FROM services WHERE code = '" . ServiceTypeEnum::DG->value . "'")->fetchColumn();
 
-    // 2. Insertion des Rôles
+    // 2. Insertion des Rôles via l'Enum RoleType
     echo "Insertion des rôles...\n";
-    $roles = [
-        ['Administrateur', 'ADMIN', 'Accès total au système'],
-        ['Agent', 'AGENT', 'Utilisateur standard'],
-        ['Directeur', 'DIR', 'Responsable de service'],
-    ];
-
-    $stmt = $db->prepare("INSERT IGNORE INTO roles (libelle, code, description) VALUES (?, ?, ?)");
-    foreach ($roles as $r) {
-        $stmt->execute($r);
+    $stmtRole = $db->prepare("INSERT IGNORE INTO roles (libelle, code, description) VALUES (?, ?, ?)");
+    
+    foreach (\App\Enums\RoleTypeEnum::cases() as $role) {
+        $stmtRole->execute([
+            $role->label(),
+            $role->value,
+            $role->description()
+        ]);
     }
-    $adminRoleId = $db->query("SELECT id FROM roles WHERE code = 'ADMIN'")->fetchColumn();
+    
+    $adminRoleId = $db->query("SELECT id FROM roles WHERE code = '" . \App\Enums\RoleTypeEnum::ADMIN->value . "'")->fetchColumn();
+    $agentRoleId = $db->query("SELECT id FROM roles WHERE code = '" . \App\Enums\RoleTypeEnum::AGENT->value . "'")->fetchColumn();
 
-    // 3. Insertion de l'utilisateur Admin par défaut
-    echo "Insertion de l'utilisateur administrateur...\n";
+    // 3. Préparation de l'insertion des utilisateurs
+    $insertUserSql = "INSERT INTO users (nom, prenom, email, password_hash, service_id, role_id, categorie, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    $stmtInsertUser = $db->prepare($insertUserSql);
+    
+    $checkUserStmt = $db->prepare("SELECT id FROM users WHERE email = ?");
+
+    // 4. Insertion de l'utilisateur Admin par défaut
+    echo "Vérification de l'utilisateur administrateur...\n";
     $adminEmail = 'admin@gestfinance.com';
     $password = password_hash('admin123', PASSWORD_DEFAULT);
 
-    $stmt = $db->prepare("SELECT id FROM users WHERE email = ?");
-    $stmt->execute([$adminEmail]);
-    
-    if (!$stmt->fetch()) {
-        $stmt = $db->prepare("INSERT INTO users (nom, prenom, email, password_hash, service_id, role_id, categorie, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([
+    $checkUserStmt->execute([$adminEmail]);
+    if (!$checkUserStmt->fetch()) {
+        $stmtInsertUser->execute([
             'ADMIN', 
             'System', 
             $adminEmail, 
@@ -74,23 +72,25 @@ try {
         echo "ℹ️ L'utilisateur admin existe déjà.\n";
     }
 
-    // 4. Insertion d'un Agent de test
+    // 5. Insertion d'un Agent de test
+    echo "Vérification de l'agent de test...\n";
     $agentEmail = 'agent@gestfinance.com';
-    $stmt = $db->prepare("SELECT id FROM users WHERE email = ?");
-    $stmt->execute([$agentEmail]);
     
-    if (!$stmt->fetch()) {
-        $stmt->execute([
+    $checkUserStmt->execute([$agentEmail]);
+    if (!$checkUserStmt->fetch()) {
+        $stmtInsertUser->execute([
             'USER', 
             'Test', 
             $agentEmail, 
             $password, 
             $infServiceId, 
-            null, 
+            $agentRoleId, 
             CategorieUtilisateur::AGENT->value, 
             1
         ]);
         echo "✅ Compte Agent créé : $agentEmail / admin123\n";
+    } else {
+        echo "ℹ️ L'utilisateur agent existe déjà.\n";
     }
 
     echo "--- Seeding terminé ---\n";

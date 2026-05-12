@@ -13,6 +13,19 @@
         </div>
 
         <div class="form-group">
+            <label for="responsable_id">Responsable du Service</label>
+            <select id="responsable_id" name="responsable_id" class="form-control">
+                <option value="">-- Sélectionner un responsable --</option>
+                <?php 
+                $db = \App\Core\Database::getInstance();
+                $users = $db->query("SELECT id, nom, prenom FROM users WHERE categorie = 'responsable_directeur' ORDER BY nom ASC")->fetchAll();
+                foreach ($users as $u): ?>
+                    <option value="<?= $u['id'] ?>" <?= $service['responsable_id'] == $u['id'] ? 'selected' : '' ?>><?= htmlspecialchars($u['prenom'] . ' ' . $u['nom']) ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        <div class="form-group">
             <label for="description">Description détaillée</label>
             <textarea id="description" name="description" class="form-control" rows="4"><?= htmlspecialchars($service['description'] ?? '') ?></textarea>
         </div>

@@ -2,11 +2,9 @@
 
 /** @var \App\Core\Router $router */
 
-use App\Middleware\AuthMiddleware;
-use App\Middleware\RoleMiddleware;
-use App\Enums\CategorieUtilisateur;
 use App\Controllers\AuthController;
 use App\Controllers\HomeController;
+use App\Controllers\ProfileController;
 use App\Controllers\Admin\UserController;
 use App\Controllers\Admin\ServiceController;
 use App\Controllers\Admin\RoleController;
@@ -17,13 +15,17 @@ use App\Controllers\User\FicheController;
 // Landing & Portal
 $router->get('/', [AuthController::class, 'landing']);
 
-// Auth System (Separate Logins)
+// Auth System
 $router->get('/login/admin', [AuthController::class, 'showAdminLogin']);
 $router->get('/login/user', [AuthController::class, 'showUserLogin']);
 $router->post('/login', [AuthController::class, 'login']);
 $router->get('/logout', [AuthController::class, 'logout']);
 
-// Shared Dashboard (Redirects or adapts based on SESSION['user_space'])
+// Profile
+$router->get('/profile', [ProfileController::class, 'index']);
+$router->post('/profile', [ProfileController::class, 'update']);
+
+// Shared Dashboard
 $router->get('/dashboard', [HomeController::class, 'index']);
 
 // Admin - Users

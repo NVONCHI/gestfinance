@@ -6,6 +6,7 @@ namespace App\Controllers\Admin;
 
 use App\Controllers\Controller;
 use App\Models\Service;
+use App\Models\User;
 use App\Middleware\RoleMiddleware;
 use App\Enums\CategorieUtilisateur;
 
@@ -21,8 +22,17 @@ class ServiceController extends Controller
 
     public function index(): void
     {
+        // On récupère les services avec le nom du responsable
+        $db = \App\Core\Database::getInstance();
+        $services = $db->query("
+            SELECT s.*, u.nom as resp_nom, u.prenom as resp_prenom 
+            FROM services s 
+            LEFT JOIN users u ON s.responsable_id = u.id
+            ORDER BY s.libelle ASC
+        ")->fetchAll();
+
         $this->render('admin/services/index', [
-            'services' => $this->serviceModel->all(),
+            'services' => $services,
             'title' => 'Gestion des Services',
             'breadcrumbs' => [['label' => 'Accueil', 'url' => '/'], ['label' => 'Services', 'url' => '/admin/services']]
         ]);
@@ -47,7 +57,7 @@ class ServiceController extends Controller
             $_SESSION['flash_success'] = "Service créé.";
             $this->redirect('/admin/services');
         } else {
-            $_SESSION['flash_error'] = "Erreur.";
+            $_SESSION['flash_error'] = "Erreur lors de la création.";
             $this->redirect('/admin/services/create');
         }
     }
@@ -91,6 +101,7 @@ class ServiceController extends Controller
         return [
             'libelle' => $_POST['libelle'],
             'code' => $_POST['code'],
+            'responsable_id' => !empty($_POST['responsable_id']) ? (int)$_POST['responsable_id'] : null,
             'description' => $_POST['description'],
             'is_active' => isset($_POST['is_active']) ? 1 : 0
         ];

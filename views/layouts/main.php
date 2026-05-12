@@ -249,7 +249,7 @@
     </style>
 </head>
 <body>
-    <?php if (isset($_SESSION['user_id'])): ?>
+    <?php if (\App\Core\AuthHelper::isLoggedIn()): ?>
     <aside class="sidebar">
         <div class="sidebar-header">
             <span class="material-symbols-outlined">account_balance</span>
@@ -257,8 +257,11 @@
         </div>
         
         <nav class="nav-list">
-            <a href="/dashboard" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'], '/dashboard') ? 'active' : '' ?>">
+            <a href="/dashboard" class="nav-item <?= $_SERVER['REQUEST_URI'] === '/dashboard' ? 'active' : '' ?>">
                 <span class="material-symbols-outlined">dashboard</span> Dashboard
+            </a>
+            <a href="/profile" class="nav-item <?= $_SERVER['REQUEST_URI'] === '/profile' ? 'active' : '' ?>">
+                <span class="material-symbols-outlined">account_circle</span> Mon Profil
             </a>
             
             <?php if ($_SESSION['user_space'] === 'user'): ?>
