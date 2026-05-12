@@ -21,16 +21,36 @@ class RoleController extends Controller
 
     public function index(): void
     {
+        $roles = $this->roleModel->allWithParents();
+        $tree = $this->buildTree($roles);
+
         $this->render('admin/roles/index', [
-            'roles' => $this->roleModel->all(),
-            'title' => 'Gestion des Rôles',
+            'roles' => $roles,
+            'tree' => $tree,
+            'title' => 'Gestion des Rôles (Hiérarchie)',
             'breadcrumbs' => [['label' => 'Accueil', 'url' => '/'], ['label' => 'Rôles', 'url' => '/admin/roles']]
         ]);
+    }
+
+    private function buildTree(array $elements, $parentId = null): array 
+    {
+        $branch = [];
+        foreach ($elements as $element) {
+            if ($element['parent_id'] == $parentId) {
+                $children = $this->buildTree($elements, $element['id']);
+                if ($children) {
+                    $element['children'] = $children;
+                }
+                $branch[] = $element;
+            }
+        }
+        return $branch;
     }
 
     public function create(): void
     {
         $this->render('admin/roles/create', [
+            'roles' => $this->roleModel->all(),
             'title' => 'Nouveau Rôle',
             'breadcrumbs' => [
                 ['label' => 'Accueil', 'url' => '/'],
@@ -59,6 +79,7 @@ class RoleController extends Controller
 
         $this->render('admin/roles/edit', [
             'role' => $role,
+            'roles' => $this->roleModel->all(),
             'title' => 'Modifier le Rôle',
             'breadcrumbs' => [
                 ['label' => 'Accueil', 'url' => '/'],
@@ -89,6 +110,7 @@ class RoleController extends Controller
     private function getFormData(): array
     {
         return [
+            'parent_id' => !empty($_POST['parent_id']) ? (int) $_POST['parent_id'] : null,
             'libelle' => $_POST['libelle'],
             'code' => $_POST['code'],
             'description' => $_POST['description'],

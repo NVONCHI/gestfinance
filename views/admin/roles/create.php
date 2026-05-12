@@ -8,6 +8,17 @@
         </div>
 
         <div class="form-group">
+            <label for="parent_id">Rôle Parent (Hiérarchie)</label>
+            <select id="parent_id" name="parent_id" class="form-control">
+                <option value="">-- Aucun (Rôle Racine) --</option>
+                <?php foreach ($roles as $r): ?>
+                    <option value="<?= $r['id'] ?>"><?= htmlspecialchars($r['libelle']) ?></option>
+                <?php endforeach; ?>
+            </select>
+            <small style="color: var(--md-sys-color-outline); margin-top: 4px; display: block;">Permet de définir l'organigramme (ex: Le Directeur supervise l'Agent).</small>
+        </div>
+
+        <div class="form-group">
             <label for="code">Code métier</label>
             <input type="text" id="code" name="code" class="form-control" placeholder="ex: DIR_TECH" required>
         </div>

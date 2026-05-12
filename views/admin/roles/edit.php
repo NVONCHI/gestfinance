@@ -8,6 +8,20 @@
         </div>
 
         <div class="form-group">
+            <label for="parent_id">Rôle Parent (Hiérarchie)</label>
+            <select id="parent_id" name="parent_id" class="form-control">
+                <option value="">-- Aucun (Rôle Racine) --</option>
+                <?php foreach ($roles as $r): ?>
+                    <?php if ($r['id'] != $role['id']): // Empêcher d'être parent de soi-même ?>
+                        <option value="<?= $r['id'] ?>" <?= $role['parent_id'] == $r['id'] ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($r['libelle']) ?>
+                        </option>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        <div class="form-group">
             <label for="code">Code métier</label>
             <input type="text" id="code" name="code" class="form-control" value="<?= htmlspecialchars($role['code']) ?>" required>
         </div>

@@ -1,10 +1,62 @@
 <div class="flex-between" style="margin-bottom: 32px; flex-wrap: wrap; gap: 16px;">
     <h1 style="margin: 0; font-size: 28px; color: var(--md-sys-color-primary);">Bonjour, <?= explode(' ', $_SESSION['user_name'])[0] ?> !</h1>
+    <?php if ($_SESSION['user_space'] === 'user'): ?>
     <a href="/demandes/create" class="btn btn-filled">
         <span class="material-symbols-outlined">add</span>
         Nouvelle Demande
     </a>
+    <?php endif; ?>
 </div>
+
+<?php if (isset($stats) && $_SESSION['user_space'] === 'admin'): ?>
+<!-- Tableau de bord DG / Statistiques Globales -->
+<div style="margin-bottom: 32px;">
+    <h2 style="font-size: 16px; color: var(--md-sys-color-outline); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px;">Aperçu Global</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+        
+        <div class="card" style="padding: 16px; margin: 0; display: flex; align-items: center; gap: 16px;">
+            <div style="background: var(--md-sys-color-primary-container); color: var(--md-sys-color-primary); padding: 12px; border-radius: 12px;">
+                <span class="material-symbols-outlined" style="font-size: 28px;">account_balance_wallet</span>
+            </div>
+            <div>
+                <div style="font-size: 24px; font-weight: 700; color: var(--md-sys-color-primary);"><?= number_format((float)($stats['budget_consomme'] ?? 0), 0, ',', ' ') ?></div>
+                <div style="font-size: 12px; color: var(--md-sys-color-outline);">FCFA Dépensés</div>
+            </div>
+        </div>
+
+        <div class="card" style="padding: 16px; margin: 0; display: flex; align-items: center; gap: 16px;">
+            <div style="background: #E8F5E9; color: #2E7D32; padding: 12px; border-radius: 12px;">
+                <span class="material-symbols-outlined" style="font-size: 28px;">check_circle</span>
+            </div>
+            <div>
+                <div style="font-size: 24px; font-weight: 700; color: #2E7D32;"><?= $stats['validees'] ?? 0 ?></div>
+                <div style="font-size: 12px; color: var(--md-sys-color-outline);">Demandes validées</div>
+            </div>
+        </div>
+
+        <div class="card" style="padding: 16px; margin: 0; display: flex; align-items: center; gap: 16px;">
+            <div style="background: #FFF3E0; color: #C62828; padding: 12px; border-radius: 12px;">
+                <span class="material-symbols-outlined" style="font-size: 28px;">pending_actions</span>
+            </div>
+            <div>
+                <div style="font-size: 24px; font-weight: 700; color: #C62828;"><?= ($stats['en_attente_dir'] ?? 0) + ($stats['en_attente_dg'] ?? 0) + ($stats['en_attente_ra'] ?? 0) ?></div>
+                <div style="font-size: 12px; color: var(--md-sys-color-outline);">En attente de traitement</div>
+            </div>
+        </div>
+
+        <div class="card" style="padding: 16px; margin: 0; display: flex; align-items: center; gap: 16px;">
+            <div style="background: var(--md-sys-color-surface-variant); color: var(--md-sys-color-on-surface-variant); padding: 12px; border-radius: 12px;">
+                <span class="material-symbols-outlined" style="font-size: 28px;">list_alt</span>
+            </div>
+            <div>
+                <div style="font-size: 24px; font-weight: 700;"><?= $stats['total_demandes'] ?? 0 ?></div>
+                <div style="font-size: 12px; color: var(--md-sys-color-outline);">Demandes totales</div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<?php endif; ?>
 
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
     <!-- Section Mes Demandes -->

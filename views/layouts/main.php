@@ -274,7 +274,7 @@
                 <?php endif; ?>
             <?php endif; ?>
 
-            <?php if ($_SESSION['user_space'] === 'admin'): ?>
+            <?php if (isset($_SESSION['user_space']) && $_SESSION['user_space'] === 'admin'): ?>
                 <div class="nav-section-title">Administration</div>
                 <a href="/admin/users" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'], '/admin/users') ? 'active' : '' ?>">
                     <span class="material-symbols-outlined">group</span> Utilisateurs

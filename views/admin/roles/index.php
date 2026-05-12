@@ -1,45 +1,164 @@
 <div class="flex-between" style="margin-bottom: 24px;">
-    <div></div>
+    <p style="color: var(--md-sys-color-on-surface-variant); margin: 0;">Visualisation de l'organigramme des rôles métiers</p>
     <a href="/admin/roles/create" class="btn btn-filled">
         <span class="material-symbols-outlined">add</span>
         Nouveau Rôle
     </a>
 </div>
 
-<div class="card" style="padding: 0; overflow: hidden;">
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Libellé</th>
-                <th>Code</th>
-                <th>Description</th>
-                <th>Statut</th>
-                <th style="text-align: right;">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($roles as $role): ?>
-            <tr>
-                <td style="font-weight: 500;"><?= htmlspecialchars($role['libelle']) ?></td>
-                <td><code style="background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 12px;"><?= htmlspecialchars($role['code']) ?></code></td>
-                <td style="color: var(--md-sys-color-on-surface-variant); font-size: 14px;"><?= htmlspecialchars(substr($role['description'] ?? '', 0, 60)) ?>...</td>
-                <td>
-                    <?php if ($role['is_active']): ?>
-                        <span style="color: #2E7D32; background: #E8F5E9; padding: 4px 12px; border-radius: 100px; font-size: 12px; font-weight: 700;">Actif</span>
-                    <?php else: ?>
-                        <span style="color: #C62828; background: #FFEBEE; padding: 4px 12px; border-radius: 100px; font-size: 12px; font-weight: 700;">Inactif</span>
-                    <?php endif; ?>
-                </td>
-                <td style="text-align: right;">
-                    <a href="/admin/roles/edit/<?= $role['id'] ?>" class="btn btn-text" title="Modifier">
-                        <span class="material-symbols-outlined">edit</span>
-                    </a>
-                    <a href="/admin/roles/delete/<?= $role['id'] ?>" class="btn btn-text btn-danger" title="Supprimer" onclick="return confirm('Supprimer ce rôle ?')">
-                        <span class="material-symbols-outlined">delete</span>
-                    </a>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+<style>
+    /* Hierarchical Tree CSS */
+    .tree-container {
+        padding: 32px;
+        background: white;
+        border-radius: 16px;
+    }
+    .tree-container ul {
+        padding-top: 20px; 
+        position: relative;
+        transition: all 0.5s;
+        list-style: none;
+        padding-left: 0;
+    }
+    .tree-container li {
+        float: left; 
+        text-align: center;
+        list-style-type: none;
+        position: relative;
+        padding: 20px 5px 0 20px;
+        transition: all 0.5s;
+    }
+
+    /* Connections */
+    .tree-container li::before, .tree-container li::after {
+        content: '';
+        position: absolute; 
+        top: 0; 
+        right: 50%;
+        border-top: 1px solid var(--md-sys-color-outline);
+        width: 50%; 
+        height: 20px;
+    }
+    .tree-container li::after {
+        right: auto; 
+        left: 50%;
+        border-left: 1px solid var(--md-sys-color-outline);
+    }
+
+    /* Remove connectors for single child / first & last */
+    .tree-container li:only-child::after, .tree-container li:only-child::before {
+        display: none;
+    }
+    .tree-container li:only-child { padding-top: 0; }
+    .tree-container li:first-child::before, .tree-container li:last-child::after {
+        border: 0 none;
+    }
+    .tree-container li:last-child::before {
+        border-right: 1px solid var(--md-sys-color-outline);
+        border-radius: 0 5px 0 0;
+    }
+    .tree-container li:first-child::after {
+        border-radius: 5px 0 0 0;
+    }
+
+    /* Vertical connector to parent */
+    .tree-container ul ul::before {
+        content: '';
+        position: absolute; 
+        top: 0; 
+        left: 50%;
+        border-left: 1px solid var(--md-sys-color-outline);
+        width: 0; 
+        height: 20px;
+    }
+
+    /* Node Styling */
+    .tree-node {
+        border: 1px solid var(--md-sys-color-outline);
+        padding: 12px 16px;
+        display: inline-block;
+        border-radius: 12px;
+        background: white;
+        transition: all 0.3s;
+        min-width: 140px;
+        position: relative;
+    }
+    .tree-node:hover {
+        background: var(--md-sys-color-primary-container);
+        border-color: var(--md-sys-color-primary);
+        transform: scale(1.05);
+    }
+    .tree-node.root {
+        background: var(--md-sys-color-primary);
+        color: white;
+        border: none;
+    }
+    .tree-node .node-actions {
+        display: flex;
+        justify-content: center;
+        gap: 4px;
+        margin-top: 8px;
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+    .tree-node:hover .node-actions {
+        opacity: 1;
+    }
+    .tree-node code {
+        display: block;
+        font-size: 10px;
+        margin-top: 4px;
+        opacity: 0.7;
+    }
+
+    /* Helper for horizontal layout */
+    .tree-wrapper {
+        overflow-x: auto;
+        padding-bottom: 40px;
+    }
+    .clearfix::after {
+        content: "";
+        clear: both;
+        display: table;
+    }
+</style>
+
+<div class="card tree-wrapper">
+    <div class="tree-container clearfix">
+        <?php
+        function renderTreeVisual($roles, $isRoot = false) {
+            if (empty($roles)) return;
+            
+            echo '<ul>';
+            foreach ($roles as $role) {
+                echo '<li>';
+                
+                $nodeClass = $isRoot ? 'tree-node root' : 'tree-node';
+                echo '<div class="' . $nodeClass . '">';
+                echo '<div style="font-weight: 700; font-size: 14px;">' . htmlspecialchars($role['libelle']) . '</div>';
+                echo '<code>' . htmlspecialchars($role['code']) . '</code>';
+                
+                echo '<div class="node-actions">';
+                echo '<a href="/admin/roles/edit/' . $role['id'] . '" style="color: inherit;"><span class="material-symbols-outlined" style="font-size: 16px;">edit</span></a>';
+                echo '<a href="/admin/roles/delete/' . $role['id'] . '" style="color: #C62828;" onclick="return confirm(\'Supprimer ce rôle ?\')"><span class="material-symbols-outlined" style="font-size: 16px;">delete</span></a>';
+                echo '</div>';
+                
+                echo '</div>';
+
+                if (!empty($role['children'])) {
+                    renderTreeVisual($role['children']);
+                }
+                
+                echo '</li>';
+            }
+            echo '</ul>';
+        }
+
+        if (empty($tree)) {
+            echo '<div style="text-align: center; padding: 32px; color: var(--md-sys-color-outline);">Aucun rôle défini.</div>';
+        } else {
+            renderTreeVisual($tree, true);
+        }
+        ?>
+    </div>
 </div>
