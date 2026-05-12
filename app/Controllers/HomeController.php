@@ -12,10 +12,13 @@ class HomeController extends Controller
     {
         AuthMiddleware::handle();
         
+        $space = $_SESSION['user_space'] ?? 'user';
+        
         $this->render('dashboard', [
-            'title' => 'Tableau de Bord',
+            'title' => ($space === 'admin' ? 'Dashboard Administrateur' : 'Mon Espace Utilisateur'),
             'breadcrumbs' => [
-                ['label' => 'Accueil', 'url' => '/']
+                ['label' => 'Accueil', 'url' => '/'],
+                ['label' => 'Dashboard', 'url' => '/dashboard']
             ]
         ]);
     }

@@ -20,14 +20,30 @@ class AuthController extends Controller
     }
 
     /**
-     * Affiche la page de connexion.
+     * Affiche la landing page.
      */
-    public function showLogin(): void
+    public function landing(): void
     {
         if (isset($_SESSION['user_id'])) {
-            $this->redirect('/');
+            $this->redirect('/dashboard');
         }
-        $this->render('auth/login');
+        $this->render('landing');
+    }
+
+    /**
+     * Affiche la page de connexion admin.
+     */
+    public function showAdminLogin(): void
+    {
+        $this->render('auth/login_admin', ['title' => 'Connexion Administrateur']);
+    }
+
+    /**
+     * Affiche la page de connexion utilisateur.
+     */
+    public function showUserLogin(): void
+    {
+        $this->render('auth/login_user', ['title' => 'Connexion Utilisateur']);
     }
 
     /**
@@ -40,30 +56,34 @@ class AuthController extends Controller
 
             $email = $_POST['email'] ?? '';
             $password = $_POST['password'] ?? '';
-
-            if (empty($email) || empty($password)) {
-                $_SESSION['flash_error'] = "Veuillez remplir tous les champs.";
-                $this->redirect('/login');
-            }
+            $space = $_POST['space'] ?? 'user'; // 'admin' ou 'user'
 
             $user = $this->userModel->findByEmail($email);
 
             if ($user && password_verify($password, $user['password_hash'])) {
+                
+                // Vérifier si l'utilisateur a le droit d'accéder à l'espace admin
+                if ($space === 'admin' && !in_array($user['categorie'], ['dg', 'responsable_administratif'])) {
+                    $_SESSION['flash_error'] = "Accès refusé : vous n'avez pas les droits d'administration.";
+                    $this->redirect('/login/admin');
+                }
+
                 session_regenerate_id(true);
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_name'] = $user['prenom'] . ' ' . $user['nom'];
                 $_SESSION['user_category'] = $user['categorie'];
                 $_SESSION['service_id'] = $user['service_id'];
+                $_SESSION['user_space'] = $space;
 
                 $_SESSION['flash_success'] = "Bienvenue, {$_SESSION['user_name']} !";
-                $this->redirect('/');
+                $this->redirect('/dashboard');
             } else {
-                $_SESSION['flash_error'] = "Identifiants invalides ou compte inactif.";
-                $this->redirect('/login');
+                $_SESSION['flash_error'] = "Identifiants invalides.";
+                $this->redirect($space === 'admin' ? '/login/admin' : '/login/user');
             }
         } catch (\Exception $e) {
             $_SESSION['flash_error'] = "Erreur : " . $e->getMessage();
-            $this->redirect('/login');
+            $this->redirect('/');
         }
     }
 
@@ -75,6 +95,6 @@ class AuthController extends Controller
         session_destroy();
         session_start();
         $_SESSION['flash_success'] = "Vous avez été déconnecté.";
-        $this->redirect('/login');
+        $this->redirect('/');
     }
 }

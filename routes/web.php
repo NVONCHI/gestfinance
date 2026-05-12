@@ -14,13 +14,17 @@ use App\Controllers\User\DemandeController;
 use App\Controllers\User\ValidationController;
 use App\Controllers\User\FicheController;
 
-// Auth
-$router->get('/login', [AuthController::class, 'showLogin']);
+// Landing & Portal
+$router->get('/', [AuthController::class, 'landing']);
+
+// Auth System (Separate Logins)
+$router->get('/login/admin', [AuthController::class, 'showAdminLogin']);
+$router->get('/login/user', [AuthController::class, 'showUserLogin']);
 $router->post('/login', [AuthController::class, 'login']);
 $router->get('/logout', [AuthController::class, 'logout']);
 
-// Dashboard
-$router->get('/', [HomeController::class, 'index']);
+// Shared Dashboard (Redirects or adapts based on SESSION['user_space'])
+$router->get('/dashboard', [HomeController::class, 'index']);
 
 // Admin - Users
 $router->get('/admin/users', [UserController::class, 'index']);

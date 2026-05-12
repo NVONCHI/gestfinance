@@ -257,32 +257,34 @@
         </div>
         
         <nav class="nav-list">
-            <a href="/" class="nav-item <?= $_SERVER['REQUEST_URI'] === '/' ? 'active' : '' ?>">
+            <a href="/dashboard" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'], '/dashboard') ? 'active' : '' ?>">
                 <span class="material-symbols-outlined">dashboard</span> Dashboard
             </a>
             
-            <div class="nav-section-title">Opérations</div>
-            <a href="/demandes" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'], '/demandes') ? 'active' : '' ?>">
-                <span class="material-symbols-outlined">description</span> Mes Demandes
-            </a>
-            
-            <?php if ($_SESSION['user_category'] !== 'agent'): ?>
-            <a href="/validations" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'], '/validations') ? 'active' : '' ?>">
-                <span class="material-symbols-outlined">rule</span> Validations
-            </a>
+            <?php if ($_SESSION['user_space'] === 'user'): ?>
+                <div class="nav-section-title">Mes Opérations</div>
+                <a href="/demandes" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'], '/demandes') ? 'active' : '' ?>">
+                    <span class="material-symbols-outlined">description</span> Mes Demandes
+                </a>
+                
+                <?php if ($_SESSION['user_category'] !== 'agent'): ?>
+                <a href="/validations" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'], '/validations') ? 'active' : '' ?>">
+                    <span class="material-symbols-outlined">rule</span> Centre de Validation
+                </a>
+                <?php endif; ?>
             <?php endif; ?>
 
-            <?php if (in_array($_SESSION['user_category'], ['dg', 'responsable_administratif'])): ?>
-            <div class="nav-section-title">Administration</div>
-            <a href="/admin/users" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'], '/admin/users') ? 'active' : '' ?>">
-                <span class="material-symbols-outlined">group</span> Utilisateurs
-            </a>
-            <a href="/admin/services" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'], '/admin/services') ? 'active' : '' ?>">
-                <span class="material-symbols-outlined">lan</span> Services
-            </a>
-            <a href="/admin/roles" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'], '/admin/roles') ? 'active' : '' ?>">
-                <span class="material-symbols-outlined">badge</span> Rôles
-            </a>
+            <?php if ($_SESSION['user_space'] === 'admin'): ?>
+                <div class="nav-section-title">Administration</div>
+                <a href="/admin/users" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'], '/admin/users') ? 'active' : '' ?>">
+                    <span class="material-symbols-outlined">group</span> Utilisateurs
+                </a>
+                <a href="/admin/services" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'], '/admin/services') ? 'active' : '' ?>">
+                    <span class="material-symbols-outlined">lan</span> Services
+                </a>
+                <a href="/admin/roles" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'], '/admin/roles') ? 'active' : '' ?>">
+                    <span class="material-symbols-outlined">badge</span> Rôles
+                </a>
             <?php endif; ?>
         </nav>
     </aside>
@@ -291,12 +293,19 @@
     <div class="main-wrapper">
         <?php if (isset($_SESSION['user_id'])): ?>
         <header class="top-bar">
-            <div style="font-weight: 500; font-size: 18px;"><?= $title ?? '' ?></div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="material-symbols-outlined" style="color: var(--md-sys-color-outline);">
+                    <?= $_SESSION['user_space'] === 'admin' ? 'admin_panel_settings' : 'person' ?>
+                </span>
+                <span style="font-weight: 500; font-size: 16px; color: var(--md-sys-color-outline);"><?= $_SESSION['user_space'] === 'admin' ? 'ADMIN' : 'USER' ?></span>
+                <span style="margin: 0 8px; color: var(--md-sys-color-surface-variant);">|</span>
+                <span style="font-weight: 500; font-size: 18px;"><?= $title ?? '' ?></span>
+            </div>
             <div style="display: flex; align-items: center; gap: 16px;">
                 <span style="font-size: 14px; color: var(--md-sys-color-outline);"><?= htmlspecialchars($_SESSION['user_name']) ?></span>
                 <a href="/logout" class="btn btn-text btn-danger">
                     <span class="material-symbols-outlined">logout</span>
-                    Déconnexion
+                    Quitter
                 </a>
             </div>
         </header>
