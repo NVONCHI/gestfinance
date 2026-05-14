@@ -32,18 +32,31 @@ class ValidationController extends Controller
         
         if ($userCat === CategorieUtilisateur::RESPONSABLE_DIRECTEUR->value) {
             $query .= "d.statut = 'soumis'";
-        } elseif ($userCat === CategorieUtilisateur::DG->value) {
-            $query .= "d.statut = 'valide_directeur'";
         } elseif ($userCat === CategorieUtilisateur::RESPONSABLE_ADMINISTRATIF->value) {
-            $query .= "d.statut = 'valide_dg'";
+            $query .= "d.statut = 'valide_directeur'";
+        } elseif ($userCat === CategorieUtilisateur::DG->value) {
+            $query .= "d.statut = 'valide_ra'";
         } else {
             $query .= "1=0";
         }
 
         $demandes = $db->query($query)->fetchAll();
+
+        $stmt = $db->prepare("
+            SELECT d.*, u.nom, u.prenom 
+            FROM demandes d 
+            JOIN users u ON d.user_id = u.id 
+            WHERE d.id IN (
+                SELECT demande_id FROM validations WHERE validateur_id = ?
+            )
+            ORDER BY d.created_at DESC
+        ");
+        $stmt->execute([$_SESSION['user_id']]);
+        $demandesPassees = $stmt->fetchAll();
         
         $this->render('user/validation/index', [
             'demandes' => $demandes,
+            'demandesPassees' => $demandesPassees,
             'title' => 'Validations en attente',
             'breadcrumbs' => [
                 ['label' => 'Accueil', 'url' => '/'],
@@ -56,6 +69,7 @@ class ValidationController extends Controller
     {
         CsrfMiddleware::handle();
         $commentaire = $_POST['commentaire'] ?? '';
+        
         if ($this->validationService->validate($id, $_SESSION['user_id'], $commentaire)) {
             $_SESSION['flash_success'] = "Validée.";
         }

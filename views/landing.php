@@ -59,23 +59,14 @@
         <?= __('landing_desc') ?>
     </p>
 
-    <div class="landing-grid">
-        <a href="/login/admin" class="space-card">
-            <div class="icon-container icon-admin">
-                <span class="material-symbols-outlined" style="font-size: 40px;">admin_panel_settings</span>
+    <div class="landing-grid" style="grid-template-columns: 1fr; max-width: 400px; margin: 48px auto 0;">
+        <a href="/login" class="space-card">
+            <div class="icon-container" style="background: var(--md-sys-color-primary-container); color: var(--md-sys-color-primary);">
+                <span class="material-symbols-outlined" style="font-size: 40px;">login</span>
             </div>
-            <h2 style="margin: 0; font-size: 24px;"><?= __('admin_space') ?></h2>
-            <p style="margin: 0; font-size: 14px; color: var(--md-sys-color-on-surface-variant);"><?= __('admin_space_desc') ?></p>
-            <div class="btn btn-filled" style="margin-top: 8px;"><?= __('access_admin') ?></div>
-        </a>
-
-        <a href="/login/user" class="space-card">
-            <div class="icon-container icon-user">
-                <span class="material-symbols-outlined" style="font-size: 40px;">person</span>
-            </div>
-            <h2 style="margin: 0; font-size: 24px;"><?= __('user_space') ?></h2>
-            <p style="margin: 0; font-size: 14px; color: var(--md-sys-color-on-surface-variant);"><?= __('user_space_desc') ?></p>
-            <div class="btn btn-outlined" style="margin-top: 8px;"><?= __('access_user_space') ?></div>
+            <h2 style="margin: 0; font-size: 24px;"><?= __('login_title') ?></h2>
+            <p style="margin: 0; font-size: 14px; color: var(--md-sys-color-on-surface-variant); text-align: center;">Accédez à votre tableau de bord personnel</p>
+            <div class="btn btn-filled" style="margin-top: 8px; width: 100%; justify-content: center;"><?= __('login_btn') ?></div>
         </a>
     </div>
 </div>

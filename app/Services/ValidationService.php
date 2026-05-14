@@ -15,6 +15,7 @@ class ValidationService
      */
     public function validate(int $demandeId, int $userId, string $commentaire): bool
     {
+        
         $db = Database::getInstance();
         
         // 1. Récupérer la demande
@@ -36,13 +37,13 @@ class ValidationService
                 $newStatus = StatutDemande::VALIDE_DIRECTEUR->value;
                 $etape = 'directeur';
                 break;
-            case CategorieUtilisateur::DG->value:
-                $newStatus = StatutDemande::VALIDE_DG->value;
-                $etape = 'dg';
-                break;
             case CategorieUtilisateur::RESPONSABLE_ADMINISTRATIF->value:
-                $newStatus = StatutDemande::ENREGISTRE->value;
+                $newStatus = StatutDemande::VALIDE_RA->value;
                 $etape = 'responsable_administratif';
+                break;
+            case CategorieUtilisateur::DG->value:
+                $newStatus = StatutDemande::ENREGISTRE->value;
+                $etape = 'dg';
                 break;
         }
 

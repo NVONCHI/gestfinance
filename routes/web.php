@@ -27,8 +27,7 @@ $router->get('/lang/{locale}', function($locale) {
 });
 
 // Auth System
-$router->get('/login/admin', [AuthController::class, 'showAdminLogin']);
-$router->get('/login/user', [AuthController::class, 'showUserLogin']);
+$router->get('/login', [AuthController::class, 'showLogin']);
 $router->post('/login', [AuthController::class, 'login']);
 $router->get('/logout', [AuthController::class, 'logout']);
 

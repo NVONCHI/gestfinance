@@ -6,9 +6,12 @@
     <title><?= $title ?? 'GestFinance' ?></title>
     
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
     
     <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
         :root {
             /* Material Design 3 Color Palette (Baseline Blue) */
             --md-sys-color-primary: #0061A4;
@@ -264,17 +267,15 @@
                 <span class="material-symbols-outlined">account_circle</span> <?= __('profile') ?>
             </a>
             
-            <?php if ($_SESSION['user_space'] === 'user'): ?>
-                <div class="nav-section-title"><?= __('my_operations') ?></div>
-                <a href="/demandes" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'], '/demandes') ? 'active' : '' ?>">
-                    <span class="material-symbols-outlined">description</span> <?= __('my_requests') ?>
-                </a>
-                
-                <?php if ($_SESSION['user_category'] !== 'agent'): ?>
-                <a href="/validations" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'], '/validations') ? 'active' : '' ?>">
-                    <span class="material-symbols-outlined">rule</span> <?= __('validation_center') ?>
-                </a>
-                <?php endif; ?>
+            <div class="nav-section-title"><?= __('my_operations') ?></div>
+            <a href="/demandes" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'], '/demandes') ? 'active' : '' ?>">
+                <span class="material-symbols-outlined">description</span> <?= __('my_requests') ?>
+            </a>
+            
+            <?php if ($_SESSION['user_category'] !== 'agent'): ?>
+            <a href="/validations" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'], '/validations') ? 'active' : '' ?>">
+                <span class="material-symbols-outlined">rule</span> <?= __('validation_center') ?>
+            </a>
             <?php endif; ?>
 
             <?php if (isset($_SESSION['user_space']) && $_SESSION['user_space'] === 'admin'): ?>
@@ -343,7 +344,7 @@
                 </div>
             <?php endif; ?>
 
-            <?= $content ?>
+            <?= isset($content) ? $content : '' ?>
         </main>
     </div>
 </body>

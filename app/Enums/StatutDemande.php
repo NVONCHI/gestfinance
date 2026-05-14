@@ -12,7 +12,7 @@ enum StatutDemande: string
     case BROUILLON = 'brouillon';
     case SOUMIS = 'soumis';
     case VALIDE_DIRECTEUR = 'valide_directeur';
-    case VALIDE_DG = 'valide_dg';
+    case VALIDE_RA = 'valide_ra';
     case ENREGISTRE = 'enregistre';
     case REJETE = 'rejete';
 
@@ -24,8 +24,8 @@ enum StatutDemande: string
         return match ($this) {
             self::BROUILLON => 'Brouillon',
             self::SOUMIS => 'Soumis',
-            self::VALIDE_DIRECTEUR => 'Validé par Directeur',
-            self::VALIDE_DG => 'Validé par DG',
+            self::VALIDE_DIRECTEUR => 'Validé par Service',
+            self::VALIDE_RA => 'Validé par Comptabilité',
             self::ENREGISTRE => 'Enregistré',
             self::REJETE => 'Rejeté',
         };
@@ -40,7 +40,7 @@ enum StatutDemande: string
             self::BROUILLON => '#74777F', // Outline color (Grey)
             self::SOUMIS => '#F57C00',    // Orange
             self::VALIDE_DIRECTEUR => '#0288D1', // Light Blue
-            self::VALIDE_DG => '#1565C0',        // Primary Blue
+            self::VALIDE_RA => '#1565C0',        // Primary Blue
             self::ENREGISTRE => '#2E7D32',       // Green
             self::REJETE => '#C62828',           // Red
         };

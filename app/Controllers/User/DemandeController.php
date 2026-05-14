@@ -64,15 +64,27 @@ class DemandeController extends Controller
     {
         CsrfMiddleware::handle();
 
+        $statut = StatutDemande::BROUILLON->value;
+        if (isset($_POST['submit_action']) && $_POST['submit_action'] === 'soumettre') {
+            $cat = $_SESSION['user_category'];
+            if ($cat === \App\Enums\CategorieUtilisateur::DG->value) {
+                $statut = StatutDemande::ENREGISTRE->value;
+            } elseif ($cat === \App\Enums\CategorieUtilisateur::RESPONSABLE_ADMINISTRATIF->value) {
+                $statut = StatutDemande::VALIDE_RA->value;
+            } elseif ($cat === \App\Enums\CategorieUtilisateur::RESPONSABLE_DIRECTEUR->value) {
+                $statut = StatutDemande::VALIDE_DIRECTEUR->value;
+            } else {
+                $statut = StatutDemande::SOUMIS->value;
+            }
+        }
+
         $data = [
             'user_id' => $_SESSION['user_id'],
             'service_id' => $_POST['service_id'],
             'fonction' => $_POST['fonction'],
             'objet' => $_POST['objet'],
             'montant' => $_POST['montant'],
-            'statut' => isset($_POST['submit_action']) && $_POST['submit_action'] === 'soumettre' 
-                        ? StatutDemande::SOUMIS->value 
-                        : StatutDemande::BROUILLON->value,
+            'statut' => $statut,
         ];
 
         if ($this->demandeModel->create($data)) {

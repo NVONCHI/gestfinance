@@ -31,19 +31,11 @@ class AuthController extends Controller
     }
 
     /**
-     * Affiche la page de connexion admin.
+     * Affiche la page de connexion.
      */
-    public function showAdminLogin(): void
+    public function showLogin(): void
     {
-        $this->render('auth/login_admin', ['title' => 'Connexion Administrateur']);
-    }
-
-    /**
-     * Affiche la page de connexion utilisateur.
-     */
-    public function showUserLogin(): void
-    {
-        $this->render('auth/login_user', ['title' => 'Connexion Utilisateur']);
+        $this->render('auth/login', ['title' => 'Connexion']);
     }
 
     /**
@@ -56,17 +48,12 @@ class AuthController extends Controller
 
             $email = $_POST['email'] ?? '';
             $password = $_POST['password'] ?? '';
-            $space = $_POST['space'] ?? 'user'; // 'admin' ou 'user'
 
             $user = $this->userModel->findByEmail($email);
 
             if ($user && password_verify($password, $user['password_hash'])) {
                 
-                // Vérifier si l'utilisateur a le droit d'accéder à l'espace admin
-                if ($space === 'admin' && !in_array($user['categorie'], ['dg', 'responsable_administratif'])) {
-                    $_SESSION['flash_error'] = "Accès refusé : vous n'avez pas les droits d'administration.";
-                    $this->redirect('/login/admin');
-                }
+                $space = in_array($user['categorie'], ['dg', 'responsable_administratif']) ? 'admin' : 'user';
 
                 session_regenerate_id(true);
                 $_SESSION['user_id'] = $user['id'];
@@ -79,7 +66,7 @@ class AuthController extends Controller
                 $this->redirect('/dashboard');
             } else {
                 $_SESSION['flash_error'] = "Identifiants invalides.";
-                $this->redirect($space === 'admin' ? '/login/admin' : '/login/user');
+                $this->redirect('/login');
             }
         } catch (\Exception $e) {
             $_SESSION['flash_error'] = "Erreur : " . $e->getMessage();
