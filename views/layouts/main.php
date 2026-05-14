@@ -250,12 +250,22 @@
         .gap-16 { gap: 16px; }
         .mt-24 { margin-top: 24px; }
     </style>
+    <!-- <script>
+        window.addEventListener('load',function(){
+            document.querySelector('#loading').style.display = 'none';
+        })
+    </script> -->
 </head>
 <body>
+    <!-- <div class="loading" id="loading" style="position: absolute;height:100vh;width:100vw;background-color:#0061A4;z-index:1000;display:flex;justify-content:center;align-items:center;">
+        <div class="spinner-border text-white" role="status">
+            <img src="/loader.png" alt="logo">
+        </div>
+    </div>  -->
     <?php if (\App\Core\AuthHelper::isLoggedIn()): ?>
     <aside class="sidebar">
         <div class="sidebar-header">
-            <span class="material-symbols-outlined">account_balance</span>
+            <img src="/logo.png" alt="logo" width="30" height="30">
             <span style="font-size: 20px; font-weight: 700;">GestFinance</span>
         </div>
         
@@ -278,7 +288,7 @@
             </a>
             <?php endif; ?>
 
-            <?php if (\App\Core\AuthHelper::isAdminSpace()): ?>
+            <?php if (\App\Core\AuthHelper::isSuperAdminSpace()): ?>
                 <div class="nav-section-title"><?= __('administration') ?></div>
                 <a href="/admin/users" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'], '/admin/users') ? 'active' : '' ?>">
                     <span class="material-symbols-outlined">group</span> <?= __('users') ?>

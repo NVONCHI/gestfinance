@@ -1,4 +1,6 @@
-<?php $title = __('request_details_title'); ?>
+<?php $title = __('request_details_title'); 
+/** @var array $demande @var array $validations **/ 
+?>
 
 <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px; align-items: start;">
     <div class="card">
@@ -52,7 +54,10 @@
                 <?php foreach ($validations as $v): ?>
                     <div style="position: relative; padding-left: 20px; border-left: 2px solid var(--md-sys-color-primary);">
                         <div style="position: absolute; left: -7px; top: 0; width: 12px; height: 12px; border-radius: 50%; background: var(--md-sys-color-primary);"></div>
-                        <div style="font-weight: 700; font-size: 12px; color: var(--md-sys-color-primary); text-transform: uppercase;"><?= ucfirst($v['etape']) ?></div>
+                        <div style="font-weight: 700; font-size: 12px; color: var(--md-sys-color-primary); text-transform: uppercase;">
+                            <?php $etapeEnum = \App\Enums\EtapeValidation::tryFrom($v['etape']); ?>
+                            <?= $etapeEnum ? htmlspecialchars($etapeEnum->label()) : ucfirst(htmlspecialchars($v['etape'])) ?>
+                        </div>
                         <div style="font-weight: 500; margin: 4px 0;"><?= htmlspecialchars($v['prenom'] . ' ' . $v['nom']) ?></div>
                         <div style="font-size: 11px; color: var(--md-sys-color-outline);"><?= date('d/m/Y H:i', strtotime($v['created_at'])) ?></div>
                         <div style="margin-top: 8px; font-size: 13px; font-style: italic; background: #F5F5F5; padding: 8px; border-radius: 8px;">"<?= htmlspecialchars($v['commentaire']) ?>"</div>

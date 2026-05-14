@@ -13,6 +13,7 @@ enum CategorieUtilisateur: string
     case RESPONSABLE_DIRECTEUR = 'responsable_directeur';
     case DG = 'dg';
     case RESPONSABLE_ADMINISTRATIF = 'responsable_administratif';
+    case SUPER_ADMIN = 'super_admin';
 
     /**
      * Retourne le libellé lisible de la catégorie.
@@ -23,6 +24,7 @@ enum CategorieUtilisateur: string
             self::AGENT => 'Agent',
             self::RESPONSABLE_DIRECTEUR => 'Responsable / Directeur',
             self::DG => 'Directeur Général',
+            self::SUPER_ADMIN=>'Super Administrateur',
             self::RESPONSABLE_ADMINISTRATIF => 'Responsable Administratif',
         };
     }

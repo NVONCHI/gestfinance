@@ -47,16 +47,29 @@ class ValidationController extends Controller
             FROM demandes d 
             JOIN users u ON d.user_id = u.id 
             WHERE d.id IN (
-                SELECT demande_id FROM validations WHERE validateur_id = ?
+                SELECT demande_id FROM validations WHERE validateur_id = ? AND action = 'validation'
             )
             ORDER BY d.created_at DESC
         ");
         $stmt->execute([\App\Core\AuthHelper::getUserId()]);
         $demandesPassees = $stmt->fetchAll();
+
+        $stmt = $db->prepare("
+            SELECT d.*, u.nom, u.prenom 
+            FROM demandes d 
+            JOIN users u ON d.user_id = u.id 
+            WHERE d.id IN (
+                SELECT demande_id FROM validations WHERE validateur_id = ? AND action = 'rejet'
+            )
+            ORDER BY d.created_at DESC
+        ");
+        $stmt->execute([\App\Core\AuthHelper::getUserId()]);
+        $demandesRejetees = $stmt->fetchAll();
         
         $this->render('user/validation/index', [
             'demandes' => $demandes,
             'demandesPassees' => $demandesPassees,
+            'demandesRejetees' => $demandesRejetees,
             'title' => 'Validations en attente',
             'breadcrumbs' => [
                 ['label' => 'Accueil', 'url' => '/'],

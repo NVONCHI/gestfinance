@@ -15,7 +15,7 @@ class RoleController extends Controller
 
     public function __construct()
     {
-        RoleMiddleware::handle([CategorieUtilisateur::DG->value, CategorieUtilisateur::RESPONSABLE_ADMINISTRATIF->value]);
+        RoleMiddleware::handle([CategorieUtilisateur::DG->value, CategorieUtilisateur::RESPONSABLE_ADMINISTRATIF->value,CategorieUtilisateur::SUPER_ADMIN->value]);
         $this->roleModel = new Role();
     }
 

@@ -35,15 +35,15 @@ class ValidationService
         switch ($user['categorie']) {
             case CategorieUtilisateur::RESPONSABLE_DIRECTEUR->value:
                 $newStatus = StatutDemande::VALIDE_DIRECTEUR->value;
-                $etape = 'directeur';
+                $etape = \App\Enums\EtapeValidation::DIRECTEUR->value;
                 break;
             case CategorieUtilisateur::RESPONSABLE_ADMINISTRATIF->value:
                 $newStatus = StatutDemande::VALIDE_RA->value;
-                $etape = 'responsable_administratif';
+                $etape = \App\Enums\EtapeValidation::RESPONSABLE_ADMINISTRATIF->value;
                 break;
             case CategorieUtilisateur::DG->value:
                 $newStatus = StatutDemande::ENREGISTRE->value;
-                $etape = 'dg';
+                $etape = \App\Enums\EtapeValidation::DG->value;
                 break;
         }
 
@@ -71,7 +71,39 @@ class ValidationService
     public function reject(int $demandeId, int $userId, string $commentaire): bool
     {
         $db = Database::getInstance();
-        $stmt = $db->prepare("UPDATE demandes SET statut = ?, updated_at = NOW() WHERE id = ?");
-        return $stmt->execute([StatutDemande::REJETE->value, $demandeId]);
+        
+        $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
+        $stmt->execute([$userId]);
+        $user = $stmt->fetch();
+
+        $etape = '';
+        switch ($user['categorie']) {
+            case CategorieUtilisateur::RESPONSABLE_DIRECTEUR->value:
+                $etape = \App\Enums\EtapeValidation::DIRECTEUR->value;
+                break;
+            case CategorieUtilisateur::RESPONSABLE_ADMINISTRATIF->value:
+                $etape = \App\Enums\EtapeValidation::RESPONSABLE_ADMINISTRATIF->value;
+                break;
+            case CategorieUtilisateur::DG->value:
+                $etape = \App\Enums\EtapeValidation::DG->value;
+                break;
+        }
+
+        $db->beginTransaction();
+        try {
+            // Mise à jour du statut
+            $stmt = $db->prepare("UPDATE demandes SET statut = ?, updated_at = NOW() WHERE id = ?");
+            $stmt->execute([StatutDemande::REJETE->value, $demandeId]);
+
+            // Enregistrement du rejet
+            $stmt = $db->prepare("INSERT INTO validations (demande_id, validateur_id, action, commentaire, etape) VALUES (?, ?, 'rejet', ?, ?)");
+            $stmt->execute([$demandeId, $userId, $commentaire, $etape]);
+
+            $db->commit();
+            return true;
+        } catch (\Exception $e) {
+            $db->rollBack();
+            return false;
+        }
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Core;
 
 use App\Enums\CategorieUtilisateur;
+use App\Enums\SpaceEnum;
 
 /**
  * Helper pour gérer l'authentification et les droits d'accès sans manipuler $_SESSION directement.
@@ -96,7 +97,17 @@ class AuthHelper
      */
     public static function isAdminSpace(): bool
     {
-        return self::getSpace() === 'admin';
+        return self::getSpace() === SpaceEnum::ADMIN->value || (self::getSpace() === SpaceEnum::SUPER_ADMIN->value);
+    }
+
+    public static function isUserSpace(): bool
+    {
+        return self::getSpace() === SpaceEnum::USER->value;
+    }
+
+    public static function isSuperAdminSpace(): bool
+    {
+        return self::getSpace() === SpaceEnum::SUPER_ADMIN->value;
     }
     
     

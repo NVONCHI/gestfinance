@@ -50,37 +50,83 @@ try {
     
     $checkUserStmt = $db->prepare("SELECT id FROM users WHERE email = ?");
 
-    // 4. Insertion de l'utilisateur Admin par défaut
-    echo "Vérification de l'utilisateur administrateur...\n";
-    $adminEmail = 'admin@gestfinance.com';
-    $password = password_hash('admin123', PASSWORD_DEFAULT);
+    $comptaServiceId = $db->query("SELECT id FROM services WHERE code = '" . ServiceTypeEnum::COMPTA->value . "'")->fetchColumn();
 
-    $checkUserStmt->execute([$adminEmail]);
+    // Insertion de l'utilisateur super admin
+
+    echo "Veirification de l'utilisateur Super Admin";
+    $superAdminEmail = 'superadmin@gestfinance.com';
+    $password = password_hash("admin123",PASSWORD_DEFAULT);
+
+    $checkUserStmt->execute([$superAdminEmail]);
     if (!$checkUserStmt->fetch()) {
         $stmtInsertUser->execute([
-            'ADMIN', 
-            'System', 
-            $adminEmail, 
+            'SA', 
+            'Prenom', 
+            $superAdminEmail, 
+            $password, 
+            $dgServiceId, 
+            $adminRoleId, 
+            CategorieUtilisateur::SUPER_ADMIN->value, 
+            1
+        ]);
+        echo "✅ Compte Super Admin créé : $superAdminEmail / admin123\n";
+    } else {
+        echo "ℹ️ L'utilisateur Super Admin existe déjà.\n";
+    }
+    
+    // 4. Insertion de l'utilisateur DG par défaut
+    echo "Vérification de l'utilisateur DG...\n";
+    $dgEmail = 'dg@gestfinance.com';
+    $password = password_hash('admin123', PASSWORD_DEFAULT);
+
+    $checkUserStmt->execute([$dgEmail]);
+    if (!$checkUserStmt->fetch()) {
+        $stmtInsertUser->execute([
+            'GÉNÉRAL', 
+            'Directeur', 
+            $dgEmail, 
             $password, 
             $dgServiceId, 
             $adminRoleId, 
             CategorieUtilisateur::DG->value, 
             1
         ]);
-        echo "✅ Compte Admin créé : $adminEmail / admin123\n";
+        echo "✅ Compte DG créé : $dgEmail / admin123\n";
     } else {
-        echo "ℹ️ L'utilisateur admin existe déjà.\n";
+        echo "ℹ️ L'utilisateur DG existe déjà.\n";
     }
 
-    // 5. Insertion d'un Agent de test
+    // 5. Insertion du Responsable Comptabilité (RA)
+    echo "Vérification du Responsable Comptabilité...\n";
+    $raEmail = 'ra@gestfinance.com';
+    
+    $checkUserStmt->execute([$raEmail]);
+    if (!$checkUserStmt->fetch()) {
+        $stmtInsertUser->execute([
+            'COMPTABILITÉ', 
+            'Responsable', 
+            $raEmail, 
+            $password, 
+            $comptaServiceId, 
+            $adminRoleId, 
+            CategorieUtilisateur::RESPONSABLE_ADMINISTRATIF->value, 
+            1
+        ]);
+        echo "✅ Compte Responsable Comptabilité créé : $raEmail / admin123\n";
+    } else {
+        echo "ℹ️ L'utilisateur Responsable Comptabilité existe déjà.\n";
+    }
+
+    // 6. Insertion d'un Agent de test
     echo "Vérification de l'agent de test...\n";
     $agentEmail = 'agent@gestfinance.com';
     
     $checkUserStmt->execute([$agentEmail]);
     if (!$checkUserStmt->fetch()) {
         $stmtInsertUser->execute([
-            'USER', 
-            'Test', 
+            'TEST', 
+            'Agent', 
             $agentEmail, 
             $password, 
             $infServiceId, 

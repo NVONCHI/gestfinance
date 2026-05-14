@@ -2,7 +2,11 @@
 
 <div style="display: flex; justify-content: center; align-items: center; min-height: 70vh;">
     <div class="card" style="width: 100%; max-width: 400px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-        <h2 style="margin-top: 0; color: var(--md-sys-color-primary); margin-bottom: 32px; text-align: center;"><?= __('login_title') ?></h2>
+        <h2 style="margin-top: 0; color: var(--md-sys-color-primary); margin-bottom: 32px; text-align: center;">
+            <img src="/logo.png" alt="logo" width="80" height="80">
+            <br/>
+            <?= __('login_title') ?>
+        </h2>
         
         <form action="/login" method="POST">
             <input type="hidden" name="csrf_token" value="<?= \App\Middleware\CsrfMiddleware::generateToken() ?>">

@@ -1,3 +1,9 @@
+<?php
+/**
+ *  @var array $demande
+ *  @var array $validations
+ **/
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -72,7 +78,10 @@
             <tbody>
                 <?php foreach ($validations as $v): ?>
                 <tr>
-                    <td><?= ucfirst($v['etape']) ?></td>
+                    <td>
+                        <?php $etapeEnum = \App\Enums\EtapeValidation::tryFrom($v['etape']); ?>
+                        <?= $etapeEnum ? htmlspecialchars($etapeEnum->label()) : ucfirst(htmlspecialchars($v['etape'])) ?>
+                    </td>
                     <td><?= htmlspecialchars($v['prenom'] . ' ' . $v['nom']) ?></td>
                     <td><?= date('d/m/Y H:i', strtotime($v['created_at'])) ?></td>
                     <td><?= htmlspecialchars($v['commentaire']) ?></td>

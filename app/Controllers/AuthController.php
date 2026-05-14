@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Enums\CategorieUtilisateur;
+use App\Enums\SpaceEnum;
+use App\Middleware\AuthMiddleware;
 use App\Models\User;
 use App\Middleware\CsrfMiddleware;
 
@@ -24,6 +27,7 @@ class AuthController extends Controller
      */
     public function landing(): void
     {
+        //AuthMiddleware::handle();
         if (isset($_SESSION['user_id'])) {
             $this->redirect('/dashboard');
         }
@@ -53,7 +57,13 @@ class AuthController extends Controller
 
             if ($user && password_verify($password, $user['password_hash'])) {
                 
-                $space = in_array($user['categorie'], ['dg', 'responsable_administratif']) ? 'admin' : 'user';
+                $space = match($user['categorie']){
+                    CategorieUtilisateur::DG->value => SpaceEnum::ADMIN->value,
+                    CategorieUtilisateur::RESPONSABLE_ADMINISTRATIF->value => SpaceEnum::ADMIN->value,
+                    CategorieUtilisateur::SUPER_ADMIN->value => SpaceEnum::SUPER_ADMIN->value,
+                    CategorieUtilisateur::RESPONSABLE_DIRECTEUR->value => SpaceEnum::ADMIN->value,
+                    default => SpaceEnum::USER->value,
+                };
 
                 session_regenerate_id(true);
                 $_SESSION['user_id'] = $user['id'];
