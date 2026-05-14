@@ -29,7 +29,7 @@ class DemandeController extends Controller
      */
     public function index(): void
     {
-        $demandes = $this->demandeModel->findByUser($_SESSION['user_id']);
+        $demandes = $this->demandeModel->findByUser(\App\Core\AuthHelper::getUserId());
         
         $this->render('user/demandes/index', [
             'demandes' => $demandes,
@@ -66,7 +66,7 @@ class DemandeController extends Controller
 
         $statut = StatutDemande::BROUILLON->value;
         if (isset($_POST['submit_action']) && $_POST['submit_action'] === 'soumettre') {
-            $cat = $_SESSION['user_category'];
+            $cat = \App\Core\AuthHelper::getCategory();
             if ($cat === \App\Enums\CategorieUtilisateur::DG->value) {
                 $statut = StatutDemande::ENREGISTRE->value;
             } elseif ($cat === \App\Enums\CategorieUtilisateur::RESPONSABLE_ADMINISTRATIF->value) {
@@ -79,7 +79,7 @@ class DemandeController extends Controller
         }
 
         $data = [
-            'user_id' => $_SESSION['user_id'],
+            'user_id' => \App\Core\AuthHelper::getUserId(),
             'service_id' => $_POST['service_id'],
             'fonction' => $_POST['fonction'],
             'objet' => $_POST['objet'],
@@ -110,7 +110,7 @@ class DemandeController extends Controller
 
         // Vérifier l'accès (le demandeur ou un valideur concerné)
         // Pour simplifier : le demandeur
-        if ($demande['user_id'] != $_SESSION['user_id'] && $_SESSION['user_category'] === 'agent') {
+        if ($demande['user_id'] != \App\Core\AuthHelper::getUserId() && \App\Core\AuthHelper::isAgent()) {
             http_response_code(403);
             die("Accès non autorisé.");
         }

@@ -272,13 +272,13 @@
                 <span class="material-symbols-outlined">description</span> <?= __('my_requests') ?>
             </a>
             
-            <?php if ($_SESSION['user_category'] !== 'agent'): ?>
+            <?php if (!\App\Core\AuthHelper::isAgent()): ?>
             <a href="/validations" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'], '/validations') ? 'active' : '' ?>">
                 <span class="material-symbols-outlined">rule</span> <?= __('validation_center') ?>
             </a>
             <?php endif; ?>
 
-            <?php if (isset($_SESSION['user_space']) && $_SESSION['user_space'] === 'admin'): ?>
+            <?php if (\App\Core\AuthHelper::isAdminSpace()): ?>
                 <div class="nav-section-title"><?= __('administration') ?></div>
                 <a href="/admin/users" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'], '/admin/users') ? 'active' : '' ?>">
                     <span class="material-symbols-outlined">group</span> <?= __('users') ?>
@@ -299,9 +299,9 @@
         <header class="top-bar">
             <div style="display: flex; align-items: center; gap: 8px;">
                 <span class="material-symbols-outlined" style="color: var(--md-sys-color-outline);">
-                    <?= $_SESSION['user_space'] === 'admin' ? 'admin_panel_settings' : 'person' ?>
+                    <?= \App\Core\AuthHelper::isAdminSpace() ? 'admin_panel_settings' : 'person' ?>
                 </span>
-                <span style="font-weight: 500; font-size: 16px; color: var(--md-sys-color-outline);"><?= $_SESSION['user_space'] === 'admin' ? __('admin') : __('user') ?></span>
+                <span style="font-weight: 500; font-size: 16px; color: var(--md-sys-color-outline);"><?= \App\Core\AuthHelper::isAdminSpace() ? __('admin') : __('user') ?></span>
                 <span style="margin: 0 8px; color: var(--md-sys-color-surface-variant);">|</span>
                 <span style="font-weight: 500; font-size: 18px;"><?= $title ?? '' ?></span>
             </div>
@@ -313,7 +313,7 @@
                     <a href="/lang/en" class="btn btn-text" style="padding: 4px 8px; font-weight: <?= ($_SESSION['lang'] ?? 'fr') === 'en' ? 'bold' : 'normal' ?>; color: <?= ($_SESSION['lang'] ?? 'fr') === 'en' ? 'var(--md-sys-color-primary)' : 'var(--md-sys-color-outline)' ?>;">EN</a>
                 </div>
 
-                <span style="font-size: 14px; color: var(--md-sys-color-outline);"><?= htmlspecialchars($_SESSION['user_name']) ?></span>
+                <span style="font-size: 14px; color: var(--md-sys-color-outline);"><?= htmlspecialchars(\App\Core\AuthHelper::getUserName()) ?></span>
                 <a href="/logout" class="btn btn-text btn-danger">
                     <span class="material-symbols-outlined">logout</span>
                     <?= __('logout') ?>

@@ -22,7 +22,7 @@ class ValidationController extends Controller
 
     public function index(): void
     {
-        $userCat = $_SESSION['user_category'];
+        $userCat = \App\Core\AuthHelper::getCategory();
         if ($userCat === CategorieUtilisateur::AGENT->value) {
             $this->redirect('/');
         }
@@ -31,11 +31,11 @@ class ValidationController extends Controller
         $query = "SELECT d.*, u.nom, u.prenom FROM demandes d JOIN users u ON d.user_id = u.id WHERE ";
         
         if ($userCat === CategorieUtilisateur::RESPONSABLE_DIRECTEUR->value) {
-            $query .= "d.statut = 'soumis'";
+            $query .= "d.statut = '" . \App\Enums\StatutDemande::SOUMIS->value . "'";
         } elseif ($userCat === CategorieUtilisateur::RESPONSABLE_ADMINISTRATIF->value) {
-            $query .= "d.statut = 'valide_directeur'";
+            $query .= "d.statut = '" . \App\Enums\StatutDemande::VALIDE_DIRECTEUR->value . "'";
         } elseif ($userCat === CategorieUtilisateur::DG->value) {
-            $query .= "d.statut = 'valide_ra'";
+            $query .= "d.statut = '" . \App\Enums\StatutDemande::VALIDE_RA->value . "'";
         } else {
             $query .= "1=0";
         }
@@ -51,7 +51,7 @@ class ValidationController extends Controller
             )
             ORDER BY d.created_at DESC
         ");
-        $stmt->execute([$_SESSION['user_id']]);
+        $stmt->execute([\App\Core\AuthHelper::getUserId()]);
         $demandesPassees = $stmt->fetchAll();
         
         $this->render('user/validation/index', [
@@ -70,7 +70,7 @@ class ValidationController extends Controller
         CsrfMiddleware::handle();
         $commentaire = $_POST['commentaire'] ?? '';
         
-        if ($this->validationService->validate($id, $_SESSION['user_id'], $commentaire)) {
+        if ($this->validationService->validate($id, \App\Core\AuthHelper::getUserId(), $commentaire)) {
             $_SESSION['flash_success'] = "Validée.";
         }
         $this->redirect('/validations');
@@ -80,7 +80,7 @@ class ValidationController extends Controller
     {
         CsrfMiddleware::handle();
         $commentaire = $_POST['commentaire'] ?? '';
-        if ($this->validationService->reject($id, $_SESSION['user_id'], $commentaire)) {
+        if ($this->validationService->reject($id, \App\Core\AuthHelper::getUserId(), $commentaire)) {
             $_SESSION['flash_success'] = "Rejetée.";
         }
         $this->redirect('/validations');

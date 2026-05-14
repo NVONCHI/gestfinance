@@ -15,7 +15,7 @@ class RoleMiddleware
     {
         AuthMiddleware::handle();
 
-        $userCategory = $_SESSION['user_category'] ?? null;
+        $userCategory = \App\Core\AuthHelper::getCategory();
 
         if (!in_array($userCategory, $allowedCategories)) {
             http_response_code(403);

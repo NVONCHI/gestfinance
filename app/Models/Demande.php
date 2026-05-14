@@ -53,14 +53,19 @@ class Demande extends Model
      */
     public function getGlobalStats(): array
     {
+        $soumis = \App\Enums\StatutDemande::SOUMIS->value;
+        $valideDir = \App\Enums\StatutDemande::VALIDE_DIRECTEUR->value;
+        $valideRa = \App\Enums\StatutDemande::VALIDE_RA->value;
+        $enregistre = \App\Enums\StatutDemande::ENREGISTRE->value;
+
         $stmt = $this->db->query("
             SELECT 
                 COUNT(id) as total_demandes,
-                SUM(CASE WHEN statut = 'soumis' THEN 1 ELSE 0 END) as en_attente_dir,
-                SUM(CASE WHEN statut = 'valide_directeur' THEN 1 ELSE 0 END) as en_attente_ra,
-                SUM(CASE WHEN statut = 'valide_ra' THEN 1 ELSE 0 END) as en_attente_dg,
-                SUM(CASE WHEN statut = 'enregistre' THEN 1 ELSE 0 END) as validees,
-                SUM(CASE WHEN statut = 'enregistre' THEN montant ELSE 0 END) as budget_consomme
+                SUM(CASE WHEN statut = '{$soumis}' THEN 1 ELSE 0 END) as en_attente_dir,
+                SUM(CASE WHEN statut = '{$valideDir}' THEN 1 ELSE 0 END) as en_attente_ra,
+                SUM(CASE WHEN statut = '{$valideRa}' THEN 1 ELSE 0 END) as en_attente_dg,
+                SUM(CASE WHEN statut = '{$enregistre}' THEN 1 ELSE 0 END) as validees,
+                SUM(CASE WHEN statut = '{$enregistre}' THEN montant ELSE 0 END) as budget_consomme
             FROM {$this->table}
         ");
         return $stmt->fetch() ?: [
