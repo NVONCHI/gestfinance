@@ -62,6 +62,12 @@
                         <span class="material-symbols-outlined" style="font-size: 14px;">fiber_manual_record</span>
                         <?= $status->label() ?>
                     </span>
+                    <?php if (!empty($demande['is_justified'])): ?>
+                    <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 700; background-color: #00695C; color: white; margin-top: 4px;">
+                        <span class="material-symbols-outlined" style="font-size: 12px;">verified</span>
+                        Justifiée
+                    </span>
+                    <?php endif; ?>
                 </td>
                 <td style="text-align: right; padding-right: 24px;">
                     <div class="flex" style="justify-content: flex-end; gap: 8px;">

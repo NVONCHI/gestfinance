@@ -73,6 +73,12 @@
                 <span class="material-symbols-outlined">info</span>
                 <span style="font-weight: 700; font-size: 15px;"><?= $status->label() ?></span>
             </div>
+            <?php if (!empty($demande['is_justified'])): ?>
+            <div style="display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 12px; background-color: #00695C; color: white; margin-top: 8px;">
+                <span class="material-symbols-outlined">verified</span>
+                <span style="font-weight: 700; font-size: 14px;">Justifiée par le Responsable Administratif</span>
+            </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>
