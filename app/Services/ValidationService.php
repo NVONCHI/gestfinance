@@ -34,17 +34,41 @@ class ValidationService
         // Logique de transition
         switch ($user['categorie']) {
             case CategorieUtilisateur::RESPONSABLE_DIRECTEUR->value:
-                $newStatus = StatutDemande::VALIDE_DIRECTEUR->value;
-                $etape = \App\Enums\EtapeValidation::DIRECTEUR->value;
+                if ($demande['statut'] === StatutDemande::SOUMIS->value) {
+                    // Restriction par service : le valideur doit être le responsable du service de la demande
+                    $stmtService = $db->prepare("SELECT responsable_id FROM services WHERE id = ?");
+                    $stmtService->execute([$demande['service_id']]);
+                    $respId = $stmtService->fetchColumn();
+                    if ($respId && (int)$respId !== $userId) {
+                        return false;
+                    }
+                    $newStatus = StatutDemande::VALIDE_DIRECTEUR->value;
+                    $etape = \App\Enums\EtapeValidation::DIRECTEUR->value;
+                } else {
+                    return false;
+                }
                 break;
-            case CategorieUtilisateur::RESPONSABLE_ADMINISTRATIF->value:
-                $newStatus = StatutDemande::VALIDE_RA->value;
-                $etape = \App\Enums\EtapeValidation::RESPONSABLE_ADMINISTRATIF->value;
-                break;
+
             case CategorieUtilisateur::DG->value:
-                $newStatus = StatutDemande::ENREGISTRE->value;
-                $etape = \App\Enums\EtapeValidation::DG->value;
+                if ($demande['statut'] === StatutDemande::SOUMIS->value || $demande['statut'] === StatutDemande::VALIDE_DIRECTEUR->value) {
+                    $newStatus = StatutDemande::VALIDE_DG->value;
+                    $etape = \App\Enums\EtapeValidation::DG->value;
+                } else {
+                    return false;
+                }
                 break;
+
+            case CategorieUtilisateur::RESPONSABLE_ADMINISTRATIF->value:
+                if ($demande['statut'] === StatutDemande::VALIDE_DG->value) {
+                    $newStatus = StatutDemande::MIS_A_DISPOSITION->value;
+                    $etape = \App\Enums\EtapeValidation::RESPONSABLE_ADMINISTRATIF->value;
+                } else {
+                    return false;
+                }
+                break;
+            
+            default:
+                return false;
         }
 
         $db->beginTransaction();
@@ -72,21 +96,51 @@ class ValidationService
     {
         $db = Database::getInstance();
         
+        $stmt = $db->prepare("SELECT * FROM demandes WHERE id = ?");
+        $stmt->execute([$demandeId]);
+        $demande = $stmt->fetch();
+        if (!$demande) {
+            return false;
+        }
+
         $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
         $stmt->execute([$userId]);
         $user = $stmt->fetch();
+        if (!$user) {
+            return false;
+        }
 
         $etape = '';
         switch ($user['categorie']) {
             case CategorieUtilisateur::RESPONSABLE_DIRECTEUR->value:
+                if ($demande['statut'] !== StatutDemande::SOUMIS->value) {
+                    return false;
+                }
+                $stmtService = $db->prepare("SELECT responsable_id FROM services WHERE id = ?");
+                $stmtService->execute([$demande['service_id']]);
+                $respId = $stmtService->fetchColumn();
+                if ($respId && (int)$respId !== $userId) {
+                    return false;
+                }
                 $etape = \App\Enums\EtapeValidation::DIRECTEUR->value;
                 break;
-            case CategorieUtilisateur::RESPONSABLE_ADMINISTRATIF->value:
-                $etape = \App\Enums\EtapeValidation::RESPONSABLE_ADMINISTRATIF->value;
-                break;
+
             case CategorieUtilisateur::DG->value:
+                if ($demande['statut'] !== StatutDemande::SOUMIS->value && $demande['statut'] !== StatutDemande::VALIDE_DIRECTEUR->value) {
+                    return false;
+                }
                 $etape = \App\Enums\EtapeValidation::DG->value;
                 break;
+
+            case CategorieUtilisateur::RESPONSABLE_ADMINISTRATIF->value:
+                if ($demande['statut'] !== StatutDemande::VALIDE_DG->value) {
+                    return false;
+                }
+                $etape = \App\Enums\EtapeValidation::RESPONSABLE_ADMINISTRATIF->value;
+                break;
+
+            default:
+                return false;
         }
 
         $db->beginTransaction();

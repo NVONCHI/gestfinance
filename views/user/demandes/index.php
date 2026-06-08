@@ -68,7 +68,7 @@
                         <a href="/demandes/<?= $demande['id'] ?>" class="btn btn-text" style="padding: 8px; min-width: 40px;" title="<?= __('details') ?>">
                             <span class="material-symbols-outlined">visibility</span>
                         </a>
-                        <?php if ($demande['statut'] === 'enregistre'): ?>
+                        <?php if ($demande['statut'] === 'mis_a_disposition'): ?>
                             <a href="/demandes/<?= $demande['id'] ?>/pdf" target="_blank" class="btn btn-text" style="padding: 8px; min-width: 40px; color: var(--md-sys-color-error);" title="<?= __('download_pdf') ?>">
                                 <span class="material-symbols-outlined">picture_as_pdf</span>
                             </a>

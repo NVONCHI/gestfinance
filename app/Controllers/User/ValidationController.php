@@ -28,19 +28,42 @@ class ValidationController extends Controller
         }
 
         $db = \App\Core\Database::getInstance();
-        $query = "SELECT d.*, u.nom, u.prenom FROM demandes d JOIN users u ON d.user_id = u.id WHERE ";
         
         if ($userCat === CategorieUtilisateur::RESPONSABLE_DIRECTEUR->value) {
-            $query .= "d.statut = '" . \App\Enums\StatutDemande::SOUMIS->value . "'";
-        } elseif ($userCat === CategorieUtilisateur::RESPONSABLE_ADMINISTRATIF->value) {
-            $query .= "d.statut = '" . \App\Enums\StatutDemande::VALIDE_DIRECTEUR->value . "'";
+            $query = "SELECT d.*, u.nom, u.prenom 
+                      FROM demandes d 
+                      JOIN users u ON d.user_id = u.id 
+                      JOIN services s ON d.service_id = s.id
+                      WHERE d.statut = :statut AND s.responsable_id = :userId";
+            $stmt = $db->prepare($query);
+            $stmt->execute([
+                'statut' => \App\Enums\StatutDemande::SOUMIS->value,
+                'userId' => \App\Core\AuthHelper::getUserId()
+            ]);
+            $demandes = $stmt->fetchAll();
         } elseif ($userCat === CategorieUtilisateur::DG->value) {
-            $query .= "d.statut = '" . \App\Enums\StatutDemande::VALIDE_RA->value . "'";
+            $query = "SELECT d.*, u.nom, u.prenom 
+                      FROM demandes d 
+                      JOIN users u ON d.user_id = u.id 
+                      WHERE d.statut = :statut";
+            $stmt = $db->prepare($query);
+            $stmt->execute([
+                'statut' => \App\Enums\StatutDemande::VALIDE_DIRECTEUR->value
+            ]);
+            $demandes = $stmt->fetchAll();
+        } elseif ($userCat === CategorieUtilisateur::RESPONSABLE_ADMINISTRATIF->value) {
+            $query = "SELECT d.*, u.nom, u.prenom 
+                      FROM demandes d 
+                      JOIN users u ON d.user_id = u.id 
+                      WHERE d.statut = :statut";
+            $stmt = $db->prepare($query);
+            $stmt->execute([
+                'statut' => \App\Enums\StatutDemande::VALIDE_DG->value
+            ]);
+            $demandes = $stmt->fetchAll();
         } else {
-            $query .= "1=0";
+            $demandes = [];
         }
-
-        $demandes = $db->query($query)->fetchAll();
 
         $stmt = $db->prepare("
             SELECT d.*, u.nom, u.prenom 

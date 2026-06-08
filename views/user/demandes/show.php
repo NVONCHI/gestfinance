@@ -82,7 +82,7 @@
         <span class="material-symbols-outlined">arrow_back</span>
         <?= __('back_to_list') ?>
     </a>
-    <?php if ($demande['statut'] === 'enregistre'): ?>
+    <?php if ($demande['statut'] === 'mis_a_disposition'): ?>
         <a href="/demandes/<?= $demande['id'] ?>/pdf" target="_blank" class="btn btn-filled">
             <span class="material-symbols-outlined">picture_as_pdf</span>
             <?= __('print_sheet') ?>
